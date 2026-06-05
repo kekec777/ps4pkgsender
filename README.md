@@ -17,12 +17,20 @@ It scans a folder for `.pkg` files, displays them in a clean web interface with 
 - Send install requests without leaving the page
 - Docker-ready setup
 
-## Screenshots
+## Screenshot
 
-Add your screenshots here after publishing the repository.
+![PS4 PKG Sender homepage](screenshots/homepage.png)
 
-```md
-[![PKG Sender homepage](screenshots/homepage.png)](https://github.com/kekec777/ps4pkgsender/blob/main/screenshots/homepage.png)
+If the image does not show on GitHub, make sure the file exists here:
+
+```text
+screenshots/homepage.png
+```
+
+You can also view it directly here:
+
+```text
+https://github.com/kekec777/ps4pkgsender/blob/main/screenshots/homepage.png
 ```
 
 ## Requirements
@@ -38,6 +46,8 @@ Add your screenshots here after publishing the repository.
 .
 ├── Dockerfile
 ├── package.json
+├── screenshots
+│   └── homepage.png
 └── src
     ├── app.js
     ├── public
@@ -80,9 +90,48 @@ Folder headers use the first PKG cover image from that folder.
 | Variable | Example | Description |
 |---|---|---|
 | `PORT` | `7777` | Web server port |
-| `STATIC_FILES` | `/pkg_sender/files` | Folder containing `.pkg` files |
-| `LOCALIP` | `192.168.1.50` | IP address the PS4 can use to download packages from this server |
-| `PS4IP` | `192.168.2.2` | IP address of the PS4 package installer |
+| `STATIC_FILES` | `/pkg_sender/files` | Folder inside the container where your `.pkg` files are mounted |
+| `LOCALIP` | `192.168.x.x` | The IP address of the machine running PKG Sender, as seen from the PS4. Use your own server/PC/NAS IP, for example the LAN IP of your Docker host. |
+| `PS4IP` | `192.168.x.x` | The IP address of your PS4 package installer. Use the IP shown on your PS4 or the IP used by your PPPwn/GoldHEN setup. |
+
+### How to choose `LOCALIP` and `PS4IP`
+
+`LOCALIP` and `PS4IP` are different:
+
+```text
+LOCALIP = where the PS4 downloads the PKG from
+PS4IP   = where PKG Sender sends the install command
+```
+
+Example with a normal LAN setup:
+
+```text
+Server running PKG Sender: 192.168.1.50
+PS4:                       192.168.1.80
+```
+
+Then use:
+
+```env
+LOCALIP=192.168.1.50
+PS4IP=192.168.1.80
+```
+
+Example with a PPPwn/Raspberry Pi setup:
+
+```text
+Server running PKG Sender: 192.168.1.50
+PS4 behind PPPwn:          192.168.2.2
+```
+
+Then use:
+
+```env
+LOCALIP=192.168.1.50
+PS4IP=192.168.2.2
+```
+
+The exact IP addresses must be changed to match your own network.
 
 ## Docker Compose Example
 
@@ -96,8 +145,16 @@ services:
     environment:
       - PORT=7777
       - STATIC_FILES=/pkg_sender/files
-      - LOCALIP=192.168.1.50
-      - PS4IP=192.168.2.2
+
+      # Change this to the IP address of your server/Docker host.
+      # The PS4 must be able to reach this IP and port 7777.
+      - LOCALIP=192.168.x.x
+
+      # Change this to your PS4 IP address.
+      # For normal LAN this may be 192.168.1.x.
+      # For some PPPwn setups this may be 192.168.2.2.
+      - PS4IP=192.168.x.x
+
     volumes:
       - /path/to/your/pkg/files:/pkg_sender/files
       - ./src/public/images:/pkg_sender/src/public/images
@@ -129,10 +186,12 @@ Start the server:
 ```bash
 PORT=7777 \
 STATIC_FILES=/path/to/pkg/files \
-LOCALIP=192.168.1.50 \
-PS4IP=192.168.2.2 \
+LOCALIP=192.168.x.x \
+PS4IP=192.168.x.x \
 npm start
 ```
+
+Replace both IP addresses with your own values.
 
 ## How It Works
 
@@ -179,7 +238,7 @@ Response:
 
 ```json
 {
-  "variable": "192.168.2.2"
+  "variable": "192.168.x.x"
 }
 ```
 
@@ -190,7 +249,7 @@ POST /api/ps4ip
 Content-Type: application/json
 
 {
-  "newPS4ipadr": "192.168.2.2"
+  "newPS4ipadr": "192.168.x.x"
 }
 ```
 
