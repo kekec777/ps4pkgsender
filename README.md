@@ -22,7 +22,7 @@ It scans a folder for `.pkg` files, displays them in a clean web interface with 
 Add your screenshots here after publishing the repository.
 
 ```md
-![PKG Sender homepage](screenshots/homepage.png)
+[![PKG Sender homepage](screenshots/homepage.png)](https://github.com/kekec777/ps4pkgsender/blob/main/screenshots/homepage.png)
 ```
 
 ## Requirements
