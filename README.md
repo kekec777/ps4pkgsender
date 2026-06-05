@@ -39,7 +39,7 @@ This fork adds a refreshed web UI, cover thumbnails, folder cover images, search
 ## Requirements
 
 - Docker and Docker Compose, or Node.js installed directly
-- A PS4 running a compatible package installer/API on port `12800`
+- A PS4 running a compatible package installer/API on port `12800` For example "Remote PKG installer"
 - A folder containing your `.pkg` files
 - Optional cover images in `src/public/images`
 - Internet access from the container/server if you want to use **Download missing covers**
