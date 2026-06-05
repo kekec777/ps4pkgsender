@@ -276,7 +276,13 @@ h3 { font-size: 1rem; margin-bottom: 6px; }
 }
 
 
-/* Folder/game cover used in the accordion header */
+.library-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .folder-cover {
   width: 54px;
   height: 54px;
@@ -308,7 +314,60 @@ h3 { font-size: 1rem; margin-bottom: 6px; }
   white-space: nowrap;
 }
 
+.cover-results {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.cover-results h3 {
+  margin-bottom: 8px;
+}
+
+#coverResultsSummary {
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+#coverResultsList {
+  display: grid;
+  gap: 6px;
+  max-height: 300px;
+  overflow: auto;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.cover-result-item.downloaded {
+  color: #baf7d1;
+}
+
+.cover-result-item.failed {
+  color: #fed7d7;
+}
+
+.cover-result-item.skipped {
+  color: #fbd38d;
+}
+
+.cover-result-item.info {
+  color: #bee3f8;
+}
+
 @media (max-width: 650px) {
+  .library-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .library-actions .btn {
+    flex: 1 1 auto;
+  }
+
   .folder-cover {
     width: 46px;
     height: 46px;

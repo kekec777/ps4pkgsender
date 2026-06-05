@@ -70,7 +70,13 @@
           <p class="eyebrow">Library</p>
           <h2>Available packages</h2>
         </div>
-        <button class="btn btn-outline-light btn-sm" id="expandAll" type="button">Expand all</button>
+        <div class="library-actions">
+          <button class="btn btn-outline-light btn-sm" id="downloadMissingCovers" type="button">
+            <i class="fa-solid fa-images"></i>
+            Download missing covers
+          </button>
+          <button class="btn btn-outline-light btn-sm" id="expandAll" type="button">Expand all</button>
+        </div>
       </div>
 
       {{#hasDirs}}
@@ -127,6 +133,12 @@
       </div>
       {{/hasDirs}}
 
+      <div class="cover-results" id="coverResults" hidden>
+        <h3>Cover download results</h3>
+        <div id="coverResultsSummary"></div>
+        <ul id="coverResultsList"></ul>
+      </div>
+
       {{^hasDirs}}
       <div class="empty-state">
         <i class="fa-solid fa-box-open"></i>
@@ -153,6 +165,10 @@
       const ipInput = document.getElementById('newPS4ipadr');
       const pkgSearch = document.getElementById('pkgSearch');
       const expandAllBtn = document.getElementById('expandAll');
+      const downloadMissingCoversBtn = document.getElementById('downloadMissingCovers');
+      const coverResults = document.getElementById('coverResults');
+      const coverResultsSummary = document.getElementById('coverResultsSummary');
+      const coverResultsList = document.getElementById('coverResultsList');
       const imageModal = document.getElementById('imageModal');
       const modalImage = document.getElementById('modalImage');
       const modalCaption = document.getElementById('modalCaption');
@@ -240,6 +256,52 @@
           const collapse = folder.querySelector('.accordion-collapse');
           if (needle && visibleRows > 0) bootstrap.Collapse.getOrCreateInstance(collapse, { toggle: false }).show();
         });
+      });
+
+      downloadMissingCoversBtn.addEventListener('click', async () => {
+        const original = downloadMissingCoversBtn.innerHTML;
+        downloadMissingCoversBtn.disabled = true;
+        downloadMissingCoversBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
+
+        try {
+          const data = await requestJson('/api/covers/download-missing', { method: 'POST' });
+
+          const type = data.failed > 0 ? 'error' : 'success';
+          showToast(data.message || 'Cover download finished', type);
+
+          coverResults.hidden = false;
+          coverResultsSummary.textContent = `Checked ${data.checked || 0}. Downloaded ${data.downloaded || 0}. Skipped ${data.skipped || 0}. Failed ${data.failed || 0}.`;
+          coverResultsList.innerHTML = '';
+
+          (data.results || []).slice(0, 100).forEach((item) => {
+            const li = document.createElement('li');
+            li.className = `cover-result-item ${item.status}`;
+            li.textContent = `${item.status.toUpperCase()}: ${item.package}${item.titleId ? ' (' + item.titleId + ')' : ''}${item.source ? ' [' + item.source + ']' : ''}${item.reason ? ' - ' + item.reason : ''}${item.savedAs ? ' - saved as ' + item.savedAs : ''}`;
+            coverResultsList.appendChild(li);
+          });
+
+          if ((data.results || []).length > 100) {
+            const li = document.createElement('li');
+            li.textContent = `Showing first 100 of ${data.results.length} results. Open browser console for full result.`;
+            coverResultsList.appendChild(li);
+          }
+
+          console.log('Cover download results:', data);
+
+          if (data.downloaded > 0) {
+            setTimeout(() => window.location.reload(), 1600);
+          } else {
+            downloadMissingCoversBtn.disabled = false;
+            downloadMissingCoversBtn.innerHTML = original;
+          }
+        } catch (error) {
+          showToast(error.message, 'error');
+          coverResults.hidden = false;
+          coverResultsSummary.textContent = error.message;
+          coverResultsList.innerHTML = '';
+          downloadMissingCoversBtn.disabled = false;
+          downloadMissingCoversBtn.innerHTML = original;
+        }
       });
 
       expandAllBtn.addEventListener('click', () => {
