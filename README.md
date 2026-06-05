@@ -4,6 +4,18 @@ A small web-based PS4 PKG sender built with Node.js, Express, Mustache, and Boot
 
 It scans a folder for `.pkg` files, displays them in a clean web interface with game cover images, and sends install requests to a PS4 package installer API.
 
+## Credits
+
+This project is a fork of:
+
+```text
+https://github.com/justanormaldev/ps4-pkg-sender
+```
+
+Thanks to the original author for the base PS4 PKG sender project.
+
+This fork adds a refreshed web UI, cover thumbnails, folder cover images, search/filtering, AJAX install requests, Docker-focused setup notes, and additional networking documentation.
+
 ## Features
 
 - Browse PKG files grouped by folder
@@ -20,8 +32,6 @@ It scans a folder for `.pkg` files, displays them in a clean web interface with 
 ## Screenshot
 
 ![PS4 PKG Sender homepage](screenshots/homepage.png)
-
-
 
 ## Requirements
 
@@ -303,3 +313,4 @@ If the host can ping the PS4 but the container cannot, check Docker networking, 
 This app is intended for trusted local networks.
 
 Do not expose this service publicly to the internet. It can list and serve files from the configured `STATIC_FILES` directory and send install commands to your configured PS4 IP.
+
