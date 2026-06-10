@@ -18,6 +18,11 @@ const coverStoreRegions = (process.env.COVER_STORE_REGIONS || 'DK/da,GB/en,US/en
   .split(',')
   .map((item) => item.trim())
   .filter(Boolean);
+const coverSearchRegions = (process.env.COVER_SEARCH_REGIONS || process.env.COVER_STORE_REGIONS || 'DK/da,GB/en,US/en,DE/de,SE/sv,NO/no')
+  .split(',')
+  .map((item) => item.trim())
+  .filter(Boolean);
+const coverEnableOrbisPatches = String(process.env.COVER_ENABLE_ORBISPATCHES || 'true').toLowerCase() === 'true';
 
 function encodePublicImageUrl(folder, filename) {
   return `/public/${encodeURIComponent(folder)}/${String(filename)
@@ -34,6 +39,100 @@ function safeFileBase(value) {
     .replace(/\s+/g, '_')
     .slice(0, 180) || 'folder';
 }
+
+function cleanGameTitle(value) {
+  return String(value || '')
+    .replace(/\.[^.]+$/, '')
+    .replace(/_/g, ' ')
+    .replace(/\./g, ' ')
+    .replace(/\[[^\]]*\]/g, ' ')
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/\b(CUSA\d{5}|SLUS\d{5}|SCUS\d{5}|SCES\d{5}|SLES\d{5})\b/gi, ' ')
+    .replace(/\b[A-Z]{2}\d{4}-[A-Z0-9_-]+_00-[A-Z0-9_]+\b/gi, ' ')
+    .replace(/\b(v|ver|version)?\s*\d+(\.\d+)+\b/gi, ' ')
+    .replace(/\b(BACKPORT|OPOISSO\d+|DUPLEX|FUGAZI|PS4|PKG|A0100|V0100|STORE|TOOLS)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+
+function normalizeSearchTitle(value) {
+  const words = String(value || '')
+    .replace(/[-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .filter(Boolean);
+
+  const normalized = [];
+  const seen = new Set();
+
+  for (const word of words) {
+    const key = word.toLowerCase();
+
+    if (!seen.has(key)) {
+      normalized.push(word);
+      seen.add(key);
+    }
+  }
+
+  return normalized.join(' ');
+}
+
+function buildSearchTitle(root, name) {
+  const rootTitle = cleanGameTitle(root);
+  const nameTitle = cleanGameTitle(name);
+  const combined = nameTitle.toLowerCase().startsWith(rootTitle.toLowerCase())
+    ? nameTitle
+    : `${rootTitle} ${nameTitle}`;
+
+  return normalizeSearchTitle(combined);
+}
+
+
+
+function safeLocalImageFilename(value) {
+  const filename = path.basename(String(value || 'cover.jpg'));
+
+  if (!filename || filename === '.' || filename === '..') {
+    return 'cover.jpg';
+  }
+
+  // Keep the original filename so the missing-file check matches exactly.
+  // Only remove characters that are unsafe for local files.
+  return filename
+    .replace(/[\/\\:*?"<>|]/g, '_')
+    .slice(0, 220);
+}
+
+function imageExists(targetDir, filename) {
+  return fs.existsSync(path.join(targetDir, safeLocalImageFilename(filename)));
+}
+
+
+function imageExistsWithLegacyAlias(targetDir, filename) {
+  if (imageExists(targetDir, filename)) {
+    return true;
+  }
+
+  const parsed = path.parse(String(filename || ''));
+  const legacyName = `${safeFileBase(parsed.name)}${parsed.ext || '.jpg'}`;
+
+  return fs.existsSync(path.join(targetDir, legacyName));
+}
+
+
+function decodeHtmlEntities(value) {
+  return String(value || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&#x2F;/g, '/')
+    .replace(/&#x3D;/g, '=')
+    .replace(/&#x3F;/g, '?')
+    .replace(/&#x26;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
 
 const app = express();
 let currentPS4ipadr = process.env.PS4IP || 'localhost';
@@ -127,25 +226,13 @@ app.post('/api/covers/download-missing', async (req, res) => {
         package: 'cover-map',
         type: 'info',
         status: 'info',
-        reason: `Could not load GitHub cover map, trying PlayStation Store fallback only: ${error.message}`
+        reason: `Could not load GitHub cover map, trying fallback searches only: ${error.message}`
       });
     }
 
     for (const item of missing) {
       const titleId = extractTitleId(item.lookupText);
-
-      if (!titleId) {
-        results.push({
-          package: item.package || item.name,
-          type: item.type,
-          targetName: item.targetName,
-          status: 'skipped',
-          reason: 'No CUSA title ID found in filename/folder'
-        });
-        continue;
-      }
-
-      const lookup = await findCoverUrl(titleId, coverMap);
+      const lookup = await findCoverUrl(titleId, coverMap, item);
 
       if (!lookup.url) {
         results.push({
@@ -153,8 +240,9 @@ app.post('/api/covers/download-missing', async (req, res) => {
           type: item.type,
           targetName: item.targetName,
           titleId,
+          searchTitle: item.searchTitle,
           status: 'skipped',
-          reason: lookup.reason || 'No cover URL found for this title ID'
+          reason: lookup.reason || 'No cover URL found'
         });
         continue;
       }
@@ -167,21 +255,90 @@ app.post('/api/covers/download-missing', async (req, res) => {
           package: item.package || item.name,
           type: item.type,
           titleId,
+          searchTitle: item.searchTitle,
           status: 'downloaded',
           source: lookup.source,
           savedAs,
           savedTo: item.type === 'thumbnail' ? 'thumbnail' : 'images'
         });
       } catch (error) {
-        results.push({
-          package: item.package || item.name,
-          type: item.type,
-          targetName: item.targetName,
-          titleId,
-          status: 'failed',
-          source: lookup.source,
-          reason: error.message
-        });
+        let fallbackSaved = false;
+
+        if (item.searchTitle && !String(lookup.source || '').includes('playstation-store-search')) {
+          const fallbackLookup = await findCoverUrlByStoreSearch(item.searchTitle);
+
+          if (fallbackLookup.url) {
+            try {
+              const targetDir = item.type === 'thumbnail' ? thumbnailImagesPath : coverImagesPath;
+              const savedAs = await downloadImageToFolder(fallbackLookup.url, item.targetName, targetDir);
+
+              results.push({
+                package: item.package || item.name,
+                type: item.type,
+                titleId,
+                searchTitle: item.searchTitle,
+                status: 'downloaded',
+                source: `${fallbackLookup.source} after ${lookup.source} failed`,
+                savedAs,
+                savedTo: item.type === 'thumbnail' ? 'thumbnail' : 'images'
+              });
+
+              fallbackSaved = true;
+            } catch (fallbackError) {
+              // Continue to ORBISPatches final fallback below.
+            }
+          }
+        }
+
+        if (!fallbackSaved && titleId && coverEnableOrbisPatches && !String(lookup.source || '').includes('orbispatches')) {
+          const orbisLookup = await findCoverUrlFromOrbisPatches(titleId);
+
+          if (orbisLookup.url) {
+            try {
+              const targetDir = item.type === 'thumbnail' ? thumbnailImagesPath : coverImagesPath;
+              const savedAs = await downloadImageToFolder(orbisLookup.url, item.targetName, targetDir);
+
+              results.push({
+                package: item.package || item.name,
+                type: item.type,
+                titleId,
+                searchTitle: item.searchTitle,
+                status: 'downloaded',
+                source: `${orbisLookup.source} after ${lookup.source} failed`,
+                savedAs,
+                savedTo: item.type === 'thumbnail' ? 'thumbnail' : 'images'
+              });
+
+              fallbackSaved = true;
+            } catch (orbisError) {
+              results.push({
+                package: item.package || item.name,
+                type: item.type,
+                targetName: item.targetName,
+                titleId,
+                searchTitle: item.searchTitle,
+                status: 'failed',
+                source: `${lookup.source}; final fallback ${orbisLookup.source}`,
+                reason: `${error.message}; final fallback failed: ${orbisError.message}`
+              });
+
+              fallbackSaved = true;
+            }
+          }
+        }
+
+        if (!fallbackSaved) {
+          results.push({
+            package: item.package || item.name,
+            type: item.type,
+            targetName: item.targetName,
+            titleId,
+            searchTitle: item.searchTitle,
+            status: 'failed',
+            source: lookup.source,
+            reason: error.message
+          });
+        }
       }
     }
 
@@ -343,30 +500,25 @@ function getMissingCovers(dirs) {
   const addedFolderThumbs = new Set();
 
   dirs.forEach((dir) => {
-    const folderThumbPath = path.join(thumbnailImagesPath, dir.folderThumbname);
+    const firstPkg = dir.pkgs[0];
 
-    if (!fs.existsSync(folderThumbPath) && !addedFolderThumbs.has(dir.root)) {
-      const firstPkg = dir.pkgs[0];
+    if (!imageExistsWithLegacyAlias(thumbnailImagesPath, dir.folderThumbname) && firstPkg && !addedFolderThumbs.has(dir.root)) {
+      missing.push({
+        type: 'thumbnail',
+        root: dir.root,
+        dir: firstPkg.dir,
+        name: `${dir.root} folder thumbnail`,
+        package: firstPkg.name,
+        targetName: dir.folderThumbname,
+        lookupText: `${dir.root} ${firstPkg.dir} ${firstPkg.name}`,
+        searchTitle: buildSearchTitle(dir.root, firstPkg.name)
+      });
 
-      if (firstPkg) {
-        missing.push({
-          type: 'thumbnail',
-          root: dir.root,
-          dir: firstPkg.dir,
-          name: `${dir.root} folder thumbnail`,
-          package: firstPkg.name,
-          targetName: dir.folderThumbname,
-          lookupText: `${dir.root} ${firstPkg.dir} ${firstPkg.name}`
-        });
-
-        addedFolderThumbs.add(dir.root);
-      }
+      addedFolderThumbs.add(dir.root);
     }
 
     dir.pkgs.forEach((pkg) => {
-      const coverPath = path.join(coverImagesPath, pkg.imgname);
-
-      if (!fs.existsSync(coverPath)) {
+      if (!imageExistsWithLegacyAlias(coverImagesPath, pkg.imgname)) {
         missing.push({
           type: 'image',
           root: dir.root,
@@ -374,7 +526,8 @@ function getMissingCovers(dirs) {
           name: pkg.name,
           package: pkg.name,
           targetName: pkg.imgname,
-          lookupText: `${dir.root} ${pkg.dir} ${pkg.name}`
+          lookupText: `${dir.root} ${pkg.dir} ${pkg.name}`,
+          searchTitle: buildSearchTitle(dir.root, pkg.name)
         });
       }
     });
@@ -383,9 +536,18 @@ function getMissingCovers(dirs) {
   return missing;
 }
 
-
 function extractTitleId(value) {
   const match = String(value || '').match(/CUSA\d{5}/i);
+  return match ? match[0].toUpperCase() : null;
+}
+
+function extractLegacyTitleId(value) {
+  const match = String(value || '').match(/\b(SLUS|SCUS|SCES|SLES)\D?(\d{5})\b/i);
+  return match ? `${match[1].toUpperCase()}${match[2]}` : null;
+}
+
+function extractContentId(value) {
+  const match = String(value || '').match(/\b[A-Z]{2}\d{4}-[A-Z0-9]{4,10}\d{5}_00-[A-Z0-9_]+\b/i);
   return match ? match[0].toUpperCase() : null;
 }
 
@@ -410,25 +572,82 @@ async function loadCoverMap() {
   return data;
 }
 
-async function findCoverUrl(titleId, coverMap) {
-  if (coverMap && coverMap[titleId]) {
+async function findCoverUrl(titleId, coverMap, item = {}) {
+  const contentId = extractContentId(item.lookupText);
+  const legacyTitleId = extractLegacyTitleId(item.lookupText);
+  const searchTitle = item.searchTitle || cleanGameTitle(item.lookupText);
+
+  if (titleId && coverMap && coverMap[titleId]) {
     return {
       url: coverMap[titleId],
       source: 'github-cover-map'
     };
   }
 
-  const storeResult = await findCoverUrlFromPlayStationStore(titleId);
+  if (titleId) {
+    const storeResult = await findCoverUrlFromPlayStationStore(titleId);
 
-  if (storeResult.url) {
-    return storeResult;
+    if (storeResult.url) {
+      return storeResult;
+    }
+
+    const serialTitleResult = await findCoverUrlFromSerialStationTitleId(titleId);
+
+    if (serialTitleResult.url) {
+      return serialTitleResult;
+    }
+  }
+
+  if (contentId) {
+    const contentResult = await findCoverUrlFromContentId(contentId);
+
+    if (contentResult.url) {
+      return contentResult;
+    }
+  }
+
+  if (legacyTitleId) {
+    const serialResult = await findCoverUrlFromSerialStation(legacyTitleId);
+
+    if (serialResult.url) {
+      return serialResult;
+    }
+  }
+
+  if (searchTitle) {
+    const serialSearchResult = await findCoverUrlFromSerialStationSearch(searchTitle);
+
+    if (serialSearchResult.url) {
+      return serialSearchResult;
+    }
+
+    const storeSearchResult = await findCoverUrlByStoreSearch(searchTitle);
+
+    if (storeSearchResult.url) {
+      return storeSearchResult;
+    }
+  }
+
+  if (titleId && coverEnableOrbisPatches) {
+    const orbisResult = await findCoverUrlFromOrbisPatches(titleId);
+
+    if (orbisResult.url) {
+      return orbisResult;
+    }
   }
 
   return {
     url: null,
-    reason: storeResult.reason || 'Not found in GitHub cover map or PlayStation Store fallback'
+    reason: [
+      titleId ? `CUSA lookup failed for ${titleId}` : 'No CUSA title ID',
+      contentId ? `content ID lookup failed for ${contentId}` : null,
+      legacyTitleId ? `legacy title ID lookup failed for ${legacyTitleId}` : null,
+      searchTitle ? `SerialStation/title search failed for "${searchTitle}"` : 'no usable title text',
+      coverEnableOrbisPatches ? 'ORBISPatches final fallback failed' : 'ORBISPatches disabled'
+    ].filter(Boolean).join('; ')
   };
 }
+
 
 async function findCoverUrlFromPlayStationStore(titleId) {
   const errors = [];
@@ -453,21 +672,16 @@ async function findCoverUrlFromPlayStationStore(titleId) {
       }
 
       const data = await response.json();
-      const images = Array.isArray(data.images) ? data.images : [];
+      const imageUrl = findImageUrlInObject(data);
 
-      const image =
-        images.find((item) => item && item.url && Number(item.type) === 1) ||
-        images.find((item) => item && item.url && Number(item.type) === 2) ||
-        images.find((item) => item && item.url);
-
-      if (image && image.url) {
+      if (imageUrl) {
         return {
-          url: image.url,
+          url: imageUrl,
           source: `playstation-store-${country}-${language}`
         };
       }
 
-      errors.push(`${country}/${language}: no images in response`);
+      errors.push(`${country}/${language}: no image`);
     } catch (error) {
       errors.push(`${country}/${language}: ${error.message}`);
     }
@@ -475,8 +689,384 @@ async function findCoverUrlFromPlayStationStore(titleId) {
 
   return {
     url: null,
-    reason: errors.length ? errors.join('; ') : 'No PlayStation Store regions configured'
+    reason: errors.join('; ')
   };
+}
+
+async function findCoverUrlFromContentId(contentId) {
+  const errors = [];
+
+  for (const region of coverStoreRegions) {
+    const [country, language] = region.split('/');
+    if (!country || !language) continue;
+
+    const url = `https://store.playstation.com/store/api/chihiro/00_09_000/container/${encodeURIComponent(country)}/${encodeURIComponent(language)}/999/${encodeURIComponent(contentId)}`;
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'ps4-pkg-sender'
+        }
+      });
+
+      if (!response.ok) {
+        errors.push(`${country}/${language}: HTTP ${response.status}`);
+        continue;
+      }
+
+      const data = await response.json();
+      const imageUrl = findImageUrlInObject(data);
+
+      if (imageUrl) {
+        return {
+          url: imageUrl,
+          source: `playstation-store-content-${country}-${language}`
+        };
+      }
+
+      errors.push(`${country}/${language}: no image`);
+    } catch (error) {
+      errors.push(`${country}/${language}: ${error.message}`);
+    }
+  }
+
+  return {
+    url: null,
+    reason: errors.join('; ')
+  };
+}
+
+async function findCoverUrlFromOrbisPatches(titleId) {
+  try {
+    const response = await fetch(`https://orbispatches.com/${encodeURIComponent(titleId)}`, {
+      headers: {
+        Accept: 'text/html',
+        'User-Agent': 'ps4-pkg-sender'
+      }
+    });
+
+    if (!response.ok) {
+      return { url: null, reason: `orbispatches HTTP ${response.status}` };
+    }
+
+    const html = await response.text();
+
+    // Best source from ORBISPatches is the Content ID because it can be used
+    // against PlayStation/Sony metadata endpoints.
+    const contentMatch = html.match(/\b[A-Z]{2}\d{4}-CUSA\d{5}_00-[A-Z0-9_]+\b/i);
+
+    if (contentMatch) {
+      const contentResult = await findCoverUrlFromContentId(contentMatch[0].toUpperCase());
+
+      if (contentResult.url) {
+        return {
+          ...contentResult,
+          source: `orbispatches-content-id-${contentResult.source}`
+        };
+      }
+    }
+
+    // If PlayStation Store metadata fails, use the visible ORBISPatches image.
+    // ORBISPatches often uses webp CDN images and may not always return a useful
+    // content-type header, so downloadImageToFolder validates the actual bytes too.
+    const imageUrl = findImageUrlInHtml(html);
+
+    if (imageUrl) {
+      return {
+        url: imageUrl,
+        source: 'orbispatches-direct-image'
+      };
+    }
+
+    return { url: null, reason: 'orbispatches had no usable content ID or image' };
+  } catch (error) {
+    return { url: null, reason: `orbispatches: ${error.message}` };
+  }
+}
+
+
+async function findCoverUrlFromSerialStationTitleId(titleId) {
+  const match = String(titleId || '').match(/^([A-Z]{4})(\d{5})$/i);
+  if (!match) return { url: null, reason: 'invalid SerialStation title ID' };
+
+  const url = `https://serialstation.com/titles/${match[1].toUpperCase()}/${match[2]}`;
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'text/html',
+        'User-Agent': 'ps4-pkg-sender'
+      }
+    });
+
+    if (!response.ok) {
+      return { url: null, reason: `serialstation title HTTP ${response.status}` };
+    }
+
+    const html = await response.text();
+
+    // First try image from SerialStation if available.
+    const imageUrl = findImageUrlInHtml(html);
+    if (imageUrl) {
+      return {
+        url: imageUrl,
+        source: 'serialstation-title-image'
+      };
+    }
+
+    // If SerialStation has no image, use its Content ID entries to ask PlayStation metadata.
+    const contentIds = Array.from(
+      html.matchAll(/\b[A-Z]{2}\d{4}-[A-Z0-9]{4,10}\d{5}_00-[A-Z0-9_]+\b/gi)
+    ).map((match) => match[0].toUpperCase());
+
+    for (const contentId of [...new Set(contentIds)]) {
+      const contentResult = await findCoverUrlFromContentId(contentId);
+
+      if (contentResult.url) {
+        return {
+          ...contentResult,
+          source: `serialstation-content-id-${contentResult.source}`
+        };
+      }
+    }
+
+    return { url: null, reason: 'serialstation title had no usable image/content ID' };
+  } catch (error) {
+    return { url: null, reason: `serialstation title: ${error.message}` };
+  }
+}
+
+async function findCoverUrlFromSerialStationSearch(searchTitle) {
+  try {
+    const response = await fetch(`https://serialstation.com/titles/?name=${encodeURIComponent(searchTitle)}`, {
+      headers: {
+        Accept: 'text/html',
+        'User-Agent': 'ps4-pkg-sender'
+      }
+    });
+
+    if (!response.ok) {
+      return { url: null, reason: `serialstation search HTTP ${response.status}` };
+    }
+
+    const html = await response.text();
+
+    const titleMatch = html.match(/\/titles\/([A-Z]{4})\/(\d{5})/i);
+
+    if (titleMatch) {
+      const titleId = `${titleMatch[1].toUpperCase()}${titleMatch[2]}`;
+      const result = await findCoverUrlFromSerialStationTitleId(titleId);
+
+      if (result.url) {
+        return {
+          ...result,
+          source: `serialstation-search-${result.source}`
+        };
+      }
+    }
+
+    const imageUrl = findImageUrlInHtml(html);
+    if (imageUrl) {
+      return {
+        url: imageUrl,
+        source: 'serialstation-search-image'
+      };
+    }
+
+    return { url: null, reason: 'serialstation search had no usable result' };
+  } catch (error) {
+    return { url: null, reason: `serialstation search: ${error.message}` };
+  }
+}
+
+async function findCoverUrlFromSerialStation(legacyTitleId) {
+  const match = legacyTitleId.match(/^([A-Z]{4})(\d{5})$/);
+  if (!match) return { url: null, reason: 'invalid legacy title ID' };
+
+  const url = `https://serialstation.com/titles/${match[1]}/${match[2]}`;
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'text/html',
+        'User-Agent': 'ps4-pkg-sender'
+      }
+    });
+
+    if (!response.ok) {
+      return { url: null, reason: `serialstation HTTP ${response.status}` };
+    }
+
+    const html = await response.text();
+    const imageUrl = findImageUrlInHtml(html);
+
+    if (imageUrl) {
+      return {
+        url: imageUrl,
+        source: 'serialstation'
+      };
+    }
+
+    return { url: null, reason: 'serialstation had no usable image' };
+  } catch (error) {
+    return { url: null, reason: `serialstation: ${error.message}` };
+  }
+}
+
+async function findCoverUrlByStoreSearch(searchTitle) {
+  const errors = [];
+
+  for (const region of coverSearchRegions) {
+    const [country, language] = region.split('/');
+    if (!country || !language) continue;
+
+    const urls = [
+      `https://store.playstation.com/store/api/chihiro/00_09_000/search/${encodeURIComponent(country)}/${encodeURIComponent(language)}/999/${encodeURIComponent(searchTitle)}`,
+      `https://store.playstation.com/chihiro-api/search/${encodeURIComponent(country)}/${encodeURIComponent(language)}/999/${encodeURIComponent(searchTitle)}`
+    ];
+
+    for (const url of urls) {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'ps4-pkg-sender'
+          }
+        });
+
+        if (!response.ok) {
+          errors.push(`${country}/${language}: HTTP ${response.status}`);
+          continue;
+        }
+
+        const data = await response.json();
+        const imageUrl = findImageUrlInObject(data);
+
+        if (imageUrl) {
+          return {
+            url: imageUrl,
+            source: `playstation-store-search-${country}-${language}`
+          };
+        }
+
+        errors.push(`${country}/${language}: no image in search result`);
+      } catch (error) {
+        errors.push(`${country}/${language}: ${error.message}`);
+      }
+    }
+  }
+
+  return {
+    url: null,
+    reason: errors.join('; ')
+  };
+}
+
+function findImageUrlInObject(value) {
+  if (!value) return null;
+
+  if (typeof value === 'string') {
+    return /^https?:\/\/.+\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(value) ? value : null;
+  }
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const found = findImageUrlInObject(item);
+      if (found) return found;
+    }
+
+    return null;
+  }
+
+  if (typeof value === 'object') {
+    if (value.url && /^https?:\/\//i.test(value.url)) {
+      return value.url;
+    }
+
+    const preferredKeys = ['images', 'media', 'cover', 'image', 'thumbnail', 'gameContentTypesList', 'included'];
+
+    for (const key of preferredKeys) {
+      if (value[key]) {
+        const found = findImageUrlInObject(value[key]);
+        if (found) return found;
+      }
+    }
+
+    for (const key of Object.keys(value)) {
+      const found = findImageUrlInObject(value[key]);
+      if (found) return found;
+    }
+  }
+
+  return null;
+}
+
+function findImageUrlInHtml(html) {
+  const source = String(html || '');
+
+  const patterns = [
+    /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i,
+    /<img[^>]+src=["']([^"']+)["']/i,
+    /<a[^>]+href=["']([^"']*(?:serialstation\/media|linodeobjects\.com)[^"']*)["']/i,
+    /(?:href|src)=["']([^"']+\.(?:jpg|jpeg|png|webp)(?:\?[^"']*)?)["']/i,
+    /(https?:\/\/[^"'<> ]+\.(?:jpg|jpeg|png|webp)(?:\?[^"'<> ]*)?)/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = source.match(pattern);
+
+    if (match && match[1]) {
+      let imageUrl = decodeHtmlEntities(match[1]);
+
+      if (imageUrl.startsWith('//')) {
+        imageUrl = `https:${imageUrl}`;
+      }
+
+      if (imageUrl.startsWith('/')) {
+        imageUrl = `https://serialstation.com${imageUrl}`;
+      }
+
+      if (/^https?:\/\//i.test(imageUrl)) {
+        return imageUrl;
+      }
+    }
+  }
+
+  return null;
+}
+
+
+function looksLikeImageBuffer(buffer) {
+  if (!buffer || buffer.length < 12) return false;
+
+  // JPG
+  if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) return true;
+
+  // PNG
+  if (
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47
+  ) {
+    return true;
+  }
+
+  // WebP: RIFF....WEBP
+  if (
+    buffer.toString('ascii', 0, 4) === 'RIFF' &&
+    buffer.toString('ascii', 8, 12) === 'WEBP'
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function urlLooksLikeImage(imageUrl) {
+  return /\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(String(imageUrl || ''));
 }
 
 
@@ -496,11 +1086,6 @@ async function downloadImageToFolder(imageUrl, imgname, targetDir) {
   }
 
   const contentType = response.headers.get('content-type') || '';
-
-  if (!contentType.toLowerCase().startsWith('image/')) {
-    throw new Error(`URL did not return an image (${contentType || 'unknown content type'})`);
-  }
-
   const arrayBuffer = await response.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const maxBytes = 10 * 1024 * 1024;
@@ -509,9 +1094,17 @@ async function downloadImageToFolder(imageUrl, imgname, targetDir) {
     throw new Error('Image is larger than 10 MB');
   }
 
+  const isImageContentType = contentType.toLowerCase().startsWith('image/');
+  const isImageByUrl = urlLooksLikeImage(imageUrl);
+  const isImageByBytes = looksLikeImageBuffer(buffer);
+
+  if (!isImageContentType && !isImageByUrl && !isImageByBytes) {
+    throw new Error(`URL did not return an image (${contentType || 'unknown content type'})`);
+  }
+
   fs.mkdirSync(targetDir, { recursive: true });
 
-  const safeImgname = `${safeFileBase(path.basename(imgname, path.extname(imgname)))}.jpg`;
+  const safeImgname = safeLocalImageFilename(imgname);
   const targetPath = path.join(targetDir, safeImgname);
 
   fs.writeFileSync(targetPath, buffer);
