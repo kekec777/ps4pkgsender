@@ -93,11 +93,11 @@
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{id}}" aria-expanded="false" aria-controls="collapse_{{id}}">
               <span class="folder-name">
                 <img
-                  src="/public/thumbnail/{{folderThumbname}}"
+                  src="{{folderThumbUrl}}"
                   alt="{{root}} cover"
                   class="folder-cover"
                   loading="lazy"
-                  onerror="this.onerror=null;this.src='/public/images/{{folderImgname}}';"
+                  onerror="this.onerror=null;this.src='{{folderFallbackThumbUrl}}';"
                 >
                 <span>{{root}}</span>
               </span>
@@ -109,8 +109,8 @@
             <div class="pkg-list">
               {{#pkgs}}
               <article class="pkg-row" data-search="{{searchText}}">
-                <button class="cover-button" type="button" data-image="/public/images/{{imgname}}" data-title="{{name}}">
-                  <img src="/public/images/{{imgname}}" alt="{{name}} cover" loading="lazy" onerror="this.closest('.cover-button').classList.add('no-cover'); this.remove();">
+                <button class="cover-button" type="button" data-image="{{imgUrl}}" data-title="{{name}}">
+                  <img src="{{imgUrl}}" alt="{{name}} cover" loading="lazy" onerror="this.closest('.cover-button').classList.add('no-cover'); this.remove();">
                   <span class="cover-fallback"><i class="fa-solid fa-image"></i></span>
                 </button>
 
@@ -270,14 +270,13 @@
           showToast(data.message || 'Cover download finished', type);
 
           coverResults.hidden = false;
-          coverResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           coverResultsSummary.textContent = `Checked ${data.checked || 0}. Downloaded ${data.downloaded || 0}. Skipped ${data.skipped || 0}. Failed ${data.failed || 0}.`;
           coverResultsList.innerHTML = '';
 
           (data.results || []).slice(0, 100).forEach((item) => {
             const li = document.createElement('li');
             li.className = `cover-result-item ${item.status}`;
-            li.textContent = `${item.status.toUpperCase()}: ${item.package}${item.titleId ? ' (' + item.titleId + ')' : ''}${item.source ? ' [' + item.source + ']' : ''}${item.reason ? ' - ' + item.reason : ''}${item.savedAs ? ' - saved as ' + item.savedAs : ''}${item.folderThumbnail ? ' - folder thumbnail ' + item.folderThumbnail : ''}`;
+            li.textContent = `${item.status.toUpperCase()}: ${item.type ? item.type + ' - ' : ''}${item.package}${item.titleId ? ' (' + item.titleId + ')' : ''}${item.source ? ' [' + item.source + ']' : ''}${item.reason ? ' - ' + item.reason : ''}${item.savedAs ? ' - saved as ' + item.savedAs : ''}${item.savedTo ? ' in /public/' + item.savedTo : ''}`;
             coverResultsList.appendChild(li);
           });
 
@@ -298,7 +297,6 @@
         } catch (error) {
           showToast(error.message, 'error');
           coverResults.hidden = false;
-          coverResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           coverResultsSummary.textContent = error.message;
           coverResultsList.innerHTML = '';
           downloadMissingCoversBtn.disabled = false;
