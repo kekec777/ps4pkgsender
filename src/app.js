@@ -536,20 +536,163 @@ function getMissingCovers(dirs) {
   return missing;
 }
 
+
+function isBadSerialStationImageUrl(imageUrl) {
+  const value = String(imageUrl || '').toLowerCase();
+
+  return (
+    !value ||
+    value.includes('/favicon') ||
+    value.includes('apple-touch-icon') ||
+    value.includes('android-chrome') ||
+    value.includes('mstile') ||
+    value.includes('/logo') ||
+    value.includes('playstation.svg') ||
+    value.includes('ps.svg') ||
+    value.includes('xbox.svg') ||
+    value.includes('nintendo.svg')
+  );
+}
+
+function decodeHtmlEntities(value) {
+  return String(value || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&#x2F;/g, '/')
+    .replace(/&#x3D;/g, '=')
+    .replace(/&#x3F;/g, '?')
+    .replace(/&#x26;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
+function normalizeImageUrl(imageUrl, baseUrl = 'https://serialstation.com') {
+  let value = decodeHtmlEntities(String(imageUrl || '').trim());
+
+  if (value.startsWith('//')) {
+    value = `https:${value}`;
+  } else if (value.startsWith('/')) {
+    value = `${baseUrl}${value}`;
+  }
+
+  return value;
+}
+
+function isProbablyImageUrl(imageUrl) {
+  const value = normalizeImageUrl(imageUrl).toLowerCase();
+
+  if (!/^https?:\/\//i.test(value)) {
+    return false;
+  }
+
+  if (isBadSerialStationImageUrl(value)) {
+    return false;
+  }
+
+  if (
+    value.includes('/store/api/') ||
+    value.includes('/chihiro-api/') ||
+    value.includes('/container/') ||
+    value.includes('/titlecontainer/') ||
+    value.includes('/concept/')
+  ) {
+    return false;
+  }
+
+  return (
+    /\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(value) ||
+    value.includes('image.api.playstation.com') ||
+    value.includes('store.playstation.com/store/api/chihiro/00_09_000/image') ||
+    value.includes('/media/') ||
+    value.includes('/images/')
+  );
+}
+
+function absolutizeUrl(url, baseUrl = 'https://serialstation.com') {
+  return normalizeImageUrl(url, baseUrl);
+}
+
+function extractSerialStationLinks(html) {
+  const links = [];
+  const source = String(html || '');
+  const regex = /href=["']([^"']+)["']/gi;
+  let match;
+
+  while ((match = regex.exec(source)) !== null) {
+    const url = absolutizeUrl(match[1]);
+
+    if (url.includes('serialstation.com/titles/') || url.includes('serialstation.com/games/')) {
+      links.push(url);
+    }
+  }
+
+  return [...new Set(links)];
+}
+
+function extractContentIdsFromHtml(html) {
+  return [...new Set(
+    Array.from(
+      String(html || '').matchAll(/\b[A-Z]{2}\d{4}-[A-Z0-9_-]+_00-[A-Z0-9_]+\b/gi)
+    ).map((match) => match[0].toUpperCase())
+  )];
+}
+
+function getObjectKeyScore(key) {
+  const normalized = String(key || '').toLowerCase();
+
+  if (['url', 'src', 'imageurl', 'thumbnailurl', 'previewurl'].includes(normalized)) return 5;
+  if (normalized.includes('image')) return 4;
+  if (normalized.includes('thumbnail')) return 4;
+  if (normalized.includes('cover')) return 4;
+  if (normalized.includes('poster')) return 3;
+  if (normalized.includes('media')) return 2;
+
+  return 0;
+}
+
+
+function extractAllTitleIds(value) {
+  const text = String(value || '');
+  const ids = [];
+
+  // PS4 CUSA IDs. Use custom boundaries so IDs after underscores are detected.
+  for (const match of text.matchAll(/(^|[^A-Z0-9])(CUSA\d{5})(?=$|[^A-Z0-9])/gi)) {
+    ids.push(match[2].toUpperCase());
+  }
+
+  // PS1/PS2/PSP/PSN style SerialStation IDs.
+  // This also matches filenames like Castlevania_SLUS00067.pkg and Metal_Gear_Solid_2_SLUS20144.pkg.
+  for (const match of text.matchAll(/(^|[^A-Z0-9])(SLUS|SCUS|SCES|SLES|SLPS|SLPM|NPUJ|NPUI|NPEF|NPUG|NPEG|NPUB|NPEB|NPHG|ULUS|ULES|UCUS|UCES)[\s._-]*(\d{5})(?=$|[^A-Z0-9])/gi)) {
+    ids.push(`${match[2].toUpperCase()}${match[3]}`);
+  }
+
+  return [...new Set(ids)];
+}
+
+
+function isCusaTitleId(titleId) {
+  return /^CUSA\d{5}$/i.test(String(titleId || ''));
+}
+
+function isSerialStationTitleId(titleId) {
+  return /^(CUSA|SLUS|SCUS|SCES|SLES|SLPS|SLPM|NPUJ|NPUI|NPEF|NPUG|NPEG|NPUB|NPEB|NPHG|ULUS|ULES|UCUS|UCES)\d{5}$/i.test(String(titleId || ''));
+}
+
+
 function extractTitleId(value) {
-  const match = String(value || '').match(/CUSA\d{5}/i);
-  return match ? match[0].toUpperCase() : null;
+  const ids = extractAllTitleIds(value);
+  return ids.find((id) => isCusaTitleId(id)) || ids[0] || null;
 }
 
 function extractLegacyTitleId(value) {
-  const match = String(value || '').match(/\b(SLUS|SCUS|SCES|SLES)\D?(\d{5})\b/i);
-  return match ? `${match[1].toUpperCase()}${match[2]}` : null;
+  const ids = extractAllTitleIds(value);
+  return ids.find((id) => !isCusaTitleId(id)) || null;
 }
 
 function extractContentId(value) {
-  const match = String(value || '').match(/\b[A-Z]{2}\d{4}-[A-Z0-9]{4,10}\d{5}_00-[A-Z0-9_]+\b/i);
+  const match = String(value || '').match(/\b[A-Z]{2}\d{4}-[A-Z0-9_-]+_00-[A-Z0-9_]+\b/i);
   return match ? match[0].toUpperCase() : null;
 }
+
 
 async function loadCoverMap() {
   const response = await fetch(coverMapUrl, {
@@ -573,77 +716,86 @@ async function loadCoverMap() {
 }
 
 async function findCoverUrl(titleId, coverMap, item = {}) {
-  const contentId = extractContentId(item.lookupText);
-  const legacyTitleId = extractLegacyTitleId(item.lookupText);
-  const searchTitle = item.searchTitle || cleanGameTitle(item.lookupText);
+  const lookupText = item.lookupText || '';
+  const allTitleIds = extractAllTitleIds(lookupText);
+  const cusaTitleIds = allTitleIds.filter((id) => isCusaTitleId(id));
+  const serialTitleIds = allTitleIds.filter((id) => isSerialStationTitleId(id));
+  const contentId = extractContentId(lookupText);
+  const searchTitle = item.searchTitle || cleanGameTitle(lookupText);
+  const tried = [];
 
-  if (titleId && coverMap && coverMap[titleId]) {
-    return {
-      url: coverMap[titleId],
-      source: 'github-cover-map'
-    };
-  }
+  // 1. GitHub cover map and PlayStation Store for CUSA IDs.
+  for (const cusaId of cusaTitleIds) {
+    if (coverMap && coverMap[cusaId]) {
+      return {
+        url: coverMap[cusaId],
+        source: 'github-cover-map'
+      };
+    }
 
-  if (titleId) {
-    const storeResult = await findCoverUrlFromPlayStationStore(titleId);
+    const storeResult = await findCoverUrlFromPlayStationStore(cusaId);
+    tried.push(`PlayStation Store ${cusaId}: ${storeResult.reason || (storeResult.url ? 'ok' : 'no result')}`);
 
     if (storeResult.url) {
       return storeResult;
     }
+  }
 
-    const serialTitleResult = await findCoverUrlFromSerialStationTitleId(titleId);
+  // 2. SerialStation by any supported title ID, not only CUSA.
+  for (const serialId of serialTitleIds) {
+    const serialTitleResult = await findCoverUrlFromSerialStationTitleId(serialId);
+    tried.push(`SerialStation ${serialId}: ${serialTitleResult.reason || (serialTitleResult.url ? 'ok' : 'no result')}`);
 
     if (serialTitleResult.url) {
       return serialTitleResult;
     }
   }
 
+  // 3. Content ID lookup, if the filename includes one.
   if (contentId) {
     const contentResult = await findCoverUrlFromContentId(contentId);
+    tried.push(`Content ID ${contentId}: ${contentResult.reason || (contentResult.url ? 'ok' : 'no result')}`);
 
     if (contentResult.url) {
       return contentResult;
     }
   }
 
-  if (legacyTitleId) {
-    const serialResult = await findCoverUrlFromSerialStation(legacyTitleId);
-
-    if (serialResult.url) {
-      return serialResult;
-    }
-  }
-
+  // 4. SerialStation title search, then PlayStation Store title search.
   if (searchTitle) {
     const serialSearchResult = await findCoverUrlFromSerialStationSearch(searchTitle);
+    tried.push(`SerialStation title search "${searchTitle}": ${serialSearchResult.reason || (serialSearchResult.url ? 'ok' : 'no result')}`);
 
     if (serialSearchResult.url) {
       return serialSearchResult;
     }
 
     const storeSearchResult = await findCoverUrlByStoreSearch(searchTitle);
+    tried.push(`PlayStation title search "${searchTitle}": ${storeSearchResult.reason || (storeSearchResult.url ? 'ok' : 'no result')}`);
 
     if (storeSearchResult.url) {
       return storeSearchResult;
     }
   }
 
-  if (titleId && coverEnableOrbisPatches) {
-    const orbisResult = await findCoverUrlFromOrbisPatches(titleId);
+  // 5. ORBISPatches final fallback for CUSA only.
+  if (coverEnableOrbisPatches) {
+    for (const cusaId of cusaTitleIds) {
+      const orbisResult = await findCoverUrlFromOrbisPatches(cusaId);
+      tried.push(`ORBISPatches ${cusaId}: ${orbisResult.reason || (orbisResult.url ? 'ok' : 'no result')}`);
 
-    if (orbisResult.url) {
-      return orbisResult;
+      if (orbisResult.url) {
+        return orbisResult;
+      }
     }
   }
 
   return {
     url: null,
     reason: [
-      titleId ? `CUSA lookup failed for ${titleId}` : 'No CUSA title ID',
-      contentId ? `content ID lookup failed for ${contentId}` : null,
-      legacyTitleId ? `legacy title ID lookup failed for ${legacyTitleId}` : null,
-      searchTitle ? `SerialStation/title search failed for "${searchTitle}"` : 'no usable title text',
-      coverEnableOrbisPatches ? 'ORBISPatches final fallback failed' : 'ORBISPatches disabled'
+      allTitleIds.length ? `title IDs checked: ${allTitleIds.join(', ')}` : 'No title ID found',
+      searchTitle ? `search title: "${searchTitle}"` : 'no usable title text',
+      tried.length ? tried.join('; ') : null
     ].filter(Boolean).join('; ')
   };
 }
@@ -786,11 +938,18 @@ async function findCoverUrlFromOrbisPatches(titleId) {
 }
 
 
-async function findCoverUrlFromSerialStationTitleId(titleId) {
+async function findCoverUrlFromSerialStationTitleId(titleId, visited = new Set()) {
   const match = String(titleId || '').match(/^([A-Z]{4})(\d{5})$/i);
   if (!match) return { url: null, reason: 'invalid SerialStation title ID' };
 
+  const normalizedTitleId = `${match[1].toUpperCase()}${match[2]}`;
   const url = `https://serialstation.com/titles/${match[1].toUpperCase()}/${match[2]}`;
+
+  if (visited.has(url)) {
+    return { url: null, reason: 'serialstation title already checked' };
+  }
+
+  visited.add(url);
 
   try {
     const response = await fetch(url, {
@@ -806,34 +965,115 @@ async function findCoverUrlFromSerialStationTitleId(titleId) {
 
     const html = await response.text();
 
-    // First try image from SerialStation if available.
     const imageUrl = findImageUrlInHtml(html);
     if (imageUrl) {
       return {
         url: imageUrl,
-        source: 'serialstation-title-image'
+        source: `serialstation-title-image-${normalizedTitleId}`
       };
     }
 
-    // If SerialStation has no image, use its Content ID entries to ask PlayStation metadata.
-    const contentIds = Array.from(
-      html.matchAll(/\b[A-Z]{2}\d{4}-[A-Z0-9]{4,10}\d{5}_00-[A-Z0-9_]+\b/gi)
-    ).map((match) => match[0].toUpperCase());
+    const contentIds = extractContentIdsFromHtml(html);
 
-    for (const contentId of [...new Set(contentIds)]) {
+    for (const contentId of contentIds) {
       const contentResult = await findCoverUrlFromContentId(contentId);
 
       if (contentResult.url) {
         return {
           ...contentResult,
-          source: `serialstation-content-id-${contentResult.source}`
+          source: `serialstation-content-id-${normalizedTitleId}-${contentResult.source}`
         };
       }
     }
 
-    return { url: null, reason: 'serialstation title had no usable image/content ID' };
+    const links = extractSerialStationLinks(html);
+
+    for (const link of links) {
+      if (link.includes('/games/')) {
+        const gameResult = await findCoverUrlFromSerialStationGamePage(link, normalizedTitleId, visited);
+
+        if (gameResult.url) {
+          return gameResult;
+        }
+      }
+    }
+
+    return { url: null, reason: `serialstation title ${normalizedTitleId} had no usable image/content ID/game image` };
   } catch (error) {
-    return { url: null, reason: `serialstation title: ${error.message}` };
+    return { url: null, reason: `serialstation title ${normalizedTitleId}: ${error.message}` };
+  }
+}
+
+
+async function findCoverUrlFromSerialStationGamePage(gameUrl, originalTitleId, visited = new Set()) {
+  if (visited.has(gameUrl)) {
+    return { url: null, reason: 'serialstation game already checked' };
+  }
+
+  visited.add(gameUrl);
+
+  try {
+    const response = await fetch(gameUrl, {
+      headers: {
+        Accept: 'text/html',
+        'User-Agent': 'ps4-pkg-sender'
+      }
+    });
+
+    if (!response.ok) {
+      return { url: null, reason: `serialstation game HTTP ${response.status}` };
+    }
+
+    const html = await response.text();
+
+    const imageUrl = findImageUrlInHtml(html);
+    if (imageUrl) {
+      return {
+        url: imageUrl,
+        source: 'serialstation-game-image'
+      };
+    }
+
+    const contentIds = extractContentIdsFromHtml(html);
+
+    for (const contentId of contentIds) {
+      const contentResult = await findCoverUrlFromContentId(contentId);
+
+      if (contentResult.url) {
+        return {
+          ...contentResult,
+          source: `serialstation-game-content-id-${contentResult.source}`
+        };
+      }
+    }
+
+    const originalNumber = String(originalTitleId || '').replace(/^[A-Z]+/i, '');
+    const titleLinks = extractSerialStationLinks(html)
+      .filter((link) => link.includes('/titles/'))
+      .filter((link) => !originalNumber || link.includes(originalNumber));
+
+    for (const titleLink of titleLinks) {
+      const titleMatch = titleLink.match(/\/titles\/([A-Z]{4})\/(\d{5})/i);
+
+      if (!titleMatch) continue;
+
+      const linkedTitleId = `${titleMatch[1].toUpperCase()}${titleMatch[2]}`;
+
+      if (linkedTitleId === originalTitleId) continue;
+
+      const titleResult = await findCoverUrlFromSerialStationTitleId(linkedTitleId, visited);
+
+      if (titleResult.url) {
+        return {
+          ...titleResult,
+          source: `serialstation-linked-title-${linkedTitleId}-${titleResult.source}`
+        };
+      }
+    }
+
+    return { url: null, reason: 'serialstation game page had no usable image/content ID/title image' };
+  } catch (error) {
+    return { url: null, reason: `serialstation game: ${error.message}` };
   }
 }
 
@@ -851,68 +1091,43 @@ async function findCoverUrlFromSerialStationSearch(searchTitle) {
     }
 
     const html = await response.text();
+    const links = extractSerialStationLinks(html);
 
-    const titleMatch = html.match(/\/titles\/([A-Z]{4})\/(\d{5})/i);
+    for (const link of links) {
+      const titleMatch = link.match(/\/titles\/([A-Z]{4})\/(\d{5})/i);
 
-    if (titleMatch) {
-      const titleId = `${titleMatch[1].toUpperCase()}${titleMatch[2]}`;
-      const result = await findCoverUrlFromSerialStationTitleId(titleId);
+      if (titleMatch) {
+        const titleId = `${titleMatch[1].toUpperCase()}${titleMatch[2]}`;
+        const result = await findCoverUrlFromSerialStationTitleId(titleId);
 
-      if (result.url) {
-        return {
-          ...result,
-          source: `serialstation-search-${result.source}`
-        };
+        if (result.url) {
+          return {
+            ...result,
+            source: `serialstation-search-${result.source}`
+          };
+        }
       }
     }
 
-    const imageUrl = findImageUrlInHtml(html);
-    if (imageUrl) {
-      return {
-        url: imageUrl,
-        source: 'serialstation-search-image'
-      };
+    for (const link of links) {
+      if (link.includes('/games/')) {
+        const result = await findCoverUrlFromSerialStationGamePage(link, '', new Set());
+
+        if (result.url) {
+          return {
+            ...result,
+            source: `serialstation-search-${result.source}`
+          };
+        }
+      }
     }
 
-    return { url: null, reason: 'serialstation search had no usable result' };
+    return { url: null, reason: 'serialstation search had no usable title/game result' };
   } catch (error) {
     return { url: null, reason: `serialstation search: ${error.message}` };
   }
 }
 
-async function findCoverUrlFromSerialStation(legacyTitleId) {
-  const match = legacyTitleId.match(/^([A-Z]{4})(\d{5})$/);
-  if (!match) return { url: null, reason: 'invalid legacy title ID' };
-
-  const url = `https://serialstation.com/titles/${match[1]}/${match[2]}`;
-
-  try {
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'text/html',
-        'User-Agent': 'ps4-pkg-sender'
-      }
-    });
-
-    if (!response.ok) {
-      return { url: null, reason: `serialstation HTTP ${response.status}` };
-    }
-
-    const html = await response.text();
-    const imageUrl = findImageUrlInHtml(html);
-
-    if (imageUrl) {
-      return {
-        url: imageUrl,
-        source: 'serialstation'
-      };
-    }
-
-    return { url: null, reason: 'serialstation had no usable image' };
-  } catch (error) {
-    return { url: null, reason: `serialstation: ${error.message}` };
-  }
-}
 
 async function findCoverUrlByStoreSearch(searchTitle) {
   const errors = [];
@@ -950,7 +1165,7 @@ async function findCoverUrlByStoreSearch(searchTitle) {
           };
         }
 
-        errors.push(`${country}/${language}: no image in search result`);
+        errors.push(`${country}/${language}: search returned no usable image URL`);
       } catch (error) {
         errors.push(`${country}/${language}: ${error.message}`);
       }
@@ -963,16 +1178,73 @@ async function findCoverUrlByStoreSearch(searchTitle) {
   };
 }
 
-function findImageUrlInObject(value) {
+function normalizeImageUrl(imageUrl, baseUrl = 'https://serialstation.com') {
+  let value = decodeHtmlEntities(String(imageUrl || '').trim());
+
+  if (value.startsWith('//')) {
+    value = `https:${value}`;
+  } else if (value.startsWith('/')) {
+    value = `${baseUrl}${value}`;
+  }
+
+  return value;
+}
+
+function isProbablyImageUrl(imageUrl) {
+  const value = normalizeImageUrl(imageUrl).toLowerCase();
+
+  if (!/^https?:\/\//i.test(value)) {
+    return false;
+  }
+
+  if (isBadSerialStationImageUrl(value)) {
+    return false;
+  }
+
+  // Do not treat PlayStation Store API/product JSON URLs as images.
+  if (
+    value.includes('/store/api/') ||
+    value.includes('/chihiro-api/') ||
+    value.includes('/container/') ||
+    value.includes('/titlecontainer/') ||
+    value.includes('/concept/')
+  ) {
+    return false;
+  }
+
+  return (
+    /\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(value) ||
+    value.includes('image.api.playstation.com') ||
+    value.includes('store.playstation.com/store/api/chihiro/00_09_000/image') ||
+    value.includes('/media/') ||
+    value.includes('/images/')
+  );
+}
+
+function getObjectKeyScore(key) {
+  const normalized = String(key || '').toLowerCase();
+
+  if (['url', 'src', 'imageurl', 'thumbnailurl', 'previewurl'].includes(normalized)) return 5;
+  if (normalized.includes('image')) return 4;
+  if (normalized.includes('thumbnail')) return 4;
+  if (normalized.includes('cover')) return 4;
+  if (normalized.includes('poster')) return 3;
+  if (normalized.includes('media')) return 2;
+
+  return 0;
+}
+
+
+function findImageUrlInObject(value, keyHint = '') {
   if (!value) return null;
 
   if (typeof value === 'string') {
-    return /^https?:\/\/.+\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(value) ? value : null;
+    return isProbablyImageUrl(value) ? normalizeImageUrl(value) : null;
   }
 
   if (Array.isArray(value)) {
     for (const item of value) {
-      const found = findImageUrlInObject(item);
+      const found = findImageUrlInObject(item, keyHint);
       if (found) return found;
     }
 
@@ -980,21 +1252,37 @@ function findImageUrlInObject(value) {
   }
 
   if (typeof value === 'object') {
-    if (value.url && /^https?:\/\//i.test(value.url)) {
-      return value.url;
+    const entries = Object.entries(value)
+      .sort(([keyA], [keyB]) => getObjectKeyScore(keyB) - getObjectKeyScore(keyA));
+
+    for (const [key, item] of entries) {
+      if (typeof item === 'string' && getObjectKeyScore(key) > 0 && isProbablyImageUrl(item)) {
+        return normalizeImageUrl(item);
+      }
     }
 
-    const preferredKeys = ['images', 'media', 'cover', 'image', 'thumbnail', 'gameContentTypesList', 'included'];
+    const preferredKeys = [
+      'images',
+      'image',
+      'media',
+      'cover',
+      'thumbnail',
+      'thumbnailUrl',
+      'imageUrl',
+      'previewUrl',
+      'gameContentTypesList',
+      'included'
+    ];
 
     for (const key of preferredKeys) {
       if (value[key]) {
-        const found = findImageUrlInObject(value[key]);
+        const found = findImageUrlInObject(value[key], key);
         if (found) return found;
       }
     }
 
-    for (const key of Object.keys(value)) {
-      const found = findImageUrlInObject(value[key]);
+    for (const [key, item] of entries) {
+      const found = findImageUrlInObject(item, key);
       if (found) return found;
     }
   }
@@ -1002,33 +1290,28 @@ function findImageUrlInObject(value) {
   return null;
 }
 
+
 function findImageUrlInHtml(html) {
   const source = String(html || '');
 
   const patterns = [
-    /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i,
-    /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i,
-    /<img[^>]+src=["']([^"']+)["']/i,
-    /<a[^>]+href=["']([^"']*(?:serialstation\/media|linodeobjects\.com)[^"']*)["']/i,
-    /(?:href|src)=["']([^"']+\.(?:jpg|jpeg|png|webp)(?:\?[^"']*)?)["']/i,
-    /(https?:\/\/[^"'<> ]+\.(?:jpg|jpeg|png|webp)(?:\?[^"'<> ]*)?)/i
+    /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/gi,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/gi,
+    /<a[^>]+href=["']([^"']*(?:serialstation\/media|linodeobjects\.com|\.jpg|\.jpeg|\.png|\.webp)[^"']*)["']/gi,
+    /<img[^>]+src=["']([^"']+)["']/gi,
+    /(?:href|src)=["']([^"']+\.(?:jpg|jpeg|png|webp)(?:\?[^"']*)?)["']/gi,
+    /(https?:\/\/[^"'<> ]+\.(?:jpg|jpeg|png|webp)(?:\?[^"'<> ]*)?)/gi
   ];
 
   for (const pattern of patterns) {
-    const match = source.match(pattern);
+    let match;
 
-    if (match && match[1]) {
-      let imageUrl = decodeHtmlEntities(match[1]);
+    while ((match = pattern.exec(source)) !== null) {
+      if (!match[1]) continue;
 
-      if (imageUrl.startsWith('//')) {
-        imageUrl = `https:${imageUrl}`;
-      }
+      const imageUrl = normalizeImageUrl(match[1]);
 
-      if (imageUrl.startsWith('/')) {
-        imageUrl = `https://serialstation.com${imageUrl}`;
-      }
-
-      if (/^https?:\/\//i.test(imageUrl)) {
+      if (isProbablyImageUrl(imageUrl)) {
         return imageUrl;
       }
     }
@@ -1086,6 +1369,18 @@ async function downloadImageToFolder(imageUrl, imgname, targetDir) {
   }
 
   const contentType = response.headers.get('content-type') || '';
+
+  if (contentType.toLowerCase().includes('application/json')) {
+    const data = await response.json();
+    const nestedImageUrl = findImageUrlInObject(data);
+
+    if (nestedImageUrl && nestedImageUrl !== imageUrl) {
+      return downloadImageToFolder(nestedImageUrl, imgname, targetDir);
+    }
+
+    throw new Error(`URL returned JSON but no usable image URL was found (${contentType})`);
+  }
+
   const arrayBuffer = await response.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const maxBytes = 10 * 1024 * 1024;
