@@ -10,6 +10,22 @@
   <link rel="stylesheet" href="/css/solid.min.css">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    .cover-results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cover-results-header h3 {
+      margin: 0;
+    }
+  </style>
+
 </head>
 <body>
   <main class="pkg-page">
@@ -80,7 +96,13 @@
       </div>
 
       <div class="cover-results cover-results-top" id="coverResults" hidden>
-        <h3>Cover download results</h3>
+        <div class="cover-results-header">
+          <h3>Cover download results</h3>
+          <button class="btn btn-outline-light btn-sm" id="refreshAfterCovers" type="button" hidden>
+            <i class="fa-solid fa-rotate"></i>
+            Refresh images
+          </button>
+        </div>
         <div id="coverResultsSummary"></div>
         <ul id="coverResultsList"></ul>
       </div>
@@ -109,13 +131,13 @@
             <div class="pkg-list">
               {{#pkgs}}
               <article class="pkg-row" data-search="{{searchText}}">
-                <button class="cover-button" type="button" data-image="{{imgUrl}}" data-title="{{name}}">
-                  <img src="{{imgUrl}}" alt="{{name}} cover" loading="lazy" onerror="this.closest('.cover-button').classList.add('no-cover'); this.remove();">
+                <button class="cover-button" type="button" data-image="{{imgUrl}}" data-title="{{displayName}}">
+                  <img src="{{imgUrl}}" alt="{{displayName}} cover" loading="lazy" onerror="this.closest('.cover-button').classList.add('no-cover'); this.remove();">
                   <span class="cover-fallback"><i class="fa-solid fa-image"></i></span>
                 </button>
 
                 <div class="pkg-info">
-                  <h3 title="{{name}}">{{name}}</h3>
+                  <h3 title="{{displayName}}">{{displayName}}</h3>
                   <p>{{dir}}</p>
                 </div>
 
@@ -169,6 +191,7 @@
       const coverResults = document.getElementById('coverResults');
       const coverResultsSummary = document.getElementById('coverResultsSummary');
       const coverResultsList = document.getElementById('coverResultsList');
+      const refreshAfterCoversBtn = document.getElementById('refreshAfterCovers');
       const imageModal = document.getElementById('imageModal');
       const modalImage = document.getElementById('modalImage');
       const modalCaption = document.getElementById('modalCaption');
@@ -269,36 +292,42 @@
           const type = data.failed > 0 ? 'error' : 'success';
           showToast(data.message || 'Cover download finished', type);
 
-          coverResults.hidden = false;
-          coverResultsSummary.textContent = `Checked ${data.checked || 0}. Downloaded ${data.downloaded || 0}. Skipped ${data.skipped || 0}. Failed ${data.failed || 0}.`;
-          coverResultsList.innerHTML = '';
+          if (coverResults) coverResults.hidden = false;
+          if (coverResultsSummary) coverResultsSummary.textContent = `Checked ${data.checked || 0}. Downloaded ${data.downloaded || 0}. Skipped ${data.skipped || 0}. Failed ${data.failed || 0}.`;
+          if (coverResultsList) coverResultsList.innerHTML = '';
 
-          (data.results || []).slice(0, 100).forEach((item) => {
+          (data.results || []).slice(0, 250).forEach((item) => {
             const li = document.createElement('li');
             li.className = `cover-result-item ${item.status}`;
-            li.textContent = `${item.status.toUpperCase()}: ${item.type ? item.type + ' - ' : ''}${item.package}${item.titleId ? ' (' + item.titleId + ')' : ''}${item.source ? ' [' + item.source + ']' : ''}${item.reason ? ' - ' + item.reason : ''}${item.savedAs ? ' - saved as ' + item.savedAs : ''}${item.savedTo ? ' in /public/' + item.savedTo : ''}`;
-            coverResultsList.appendChild(li);
+            li.textContent = `${item.status.toUpperCase()}: ${item.type ? item.type + ' - ' : ''}${item.package}${item.titleId ? ' (' + item.titleId + ')' : ''}${item.searchTitle ? ' search: "' + item.searchTitle + '"' : ''}${item.source ? ' [' + item.source + ']' : ''}${item.reason ? ' - ' + item.reason : ''}${item.savedAs ? ' - saved as ' + item.savedAs : ''}${item.savedTo ? ' in /public/' + item.savedTo : ''}`;
+            if (coverResultsList) coverResultsList.appendChild(li);
           });
 
           if ((data.results || []).length > 100) {
             const li = document.createElement('li');
-            li.textContent = `Showing first 100 of ${data.results.length} results. Open browser console for full result.`;
-            coverResultsList.appendChild(li);
+            li.textContent = `Showing first 250 of ${data.results.length} results. Open browser console for full result.`;
+            if (coverResultsList) coverResultsList.appendChild(li);
           }
 
           console.log('Cover download results:', data);
 
+          // Keep the page open so the user can read the cover download results.
+          // Do not auto-reload after downloading covers.
+          downloadMissingCoversBtn.disabled = false;
+          downloadMissingCoversBtn.innerHTML = original;
+
+          if (refreshAfterCoversBtn) {
+            if (refreshAfterCoversBtn) refreshAfterCoversBtn.hidden = !(data.downloaded > 0);
+          }
+
           if (data.downloaded > 0) {
-            setTimeout(() => window.location.reload(), 1600);
-          } else {
-            downloadMissingCoversBtn.disabled = false;
-            downloadMissingCoversBtn.innerHTML = original;
+            showToast('Covers downloaded. Refresh the page when you are ready to see updated images.', 'success');
           }
         } catch (error) {
           showToast(error.message, 'error');
-          coverResults.hidden = false;
-          coverResultsSummary.textContent = error.message;
-          coverResultsList.innerHTML = '';
+          if (coverResults) coverResults.hidden = false;
+          if (coverResultsSummary) coverResultsSummary.textContent = error.message;
+          if (coverResultsList) coverResultsList.innerHTML = '';
           downloadMissingCoversBtn.disabled = false;
           downloadMissingCoversBtn.innerHTML = original;
         }
@@ -346,6 +375,12 @@
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') closeImageModal();
       });
+
+      if (refreshAfterCoversBtn) {
+        refreshAfterCoversBtn.addEventListener('click', () => {
+          window.location.reload();
+        });
+      }
 
       loadCurrentIp();
     });
