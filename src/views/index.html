@@ -79,6 +79,12 @@
         </div>
       </div>
 
+      <div class="cover-results cover-results-top" id="coverResults" hidden>
+        <h3>Cover download results</h3>
+        <div id="coverResultsSummary"></div>
+        <ul id="coverResultsList"></ul>
+      </div>
+
       {{#hasDirs}}
       <div class="accordion pkg-accordion" id="accordion_pkgs">
         {{#dirs}}
@@ -87,11 +93,11 @@
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{id}}" aria-expanded="false" aria-controls="collapse_{{id}}">
               <span class="folder-name">
                 <img
-                  src="/public/images/{{folderImgname}}"
+                  src="/public/thumbnail/{{folderThumbname}}"
                   alt="{{root}} cover"
                   class="folder-cover"
                   loading="lazy"
-                  onerror="this.onerror=null;this.src='/public/images/folder.png';"
+                  onerror="this.onerror=null;this.src='/public/images/{{folderImgname}}';"
                 >
                 <span>{{root}}</span>
               </span>
@@ -132,12 +138,6 @@
         {{/dirs}}
       </div>
       {{/hasDirs}}
-
-      <div class="cover-results" id="coverResults" hidden>
-        <h3>Cover download results</h3>
-        <div id="coverResultsSummary"></div>
-        <ul id="coverResultsList"></ul>
-      </div>
 
       {{^hasDirs}}
       <div class="empty-state">
@@ -270,13 +270,14 @@
           showToast(data.message || 'Cover download finished', type);
 
           coverResults.hidden = false;
+          coverResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           coverResultsSummary.textContent = `Checked ${data.checked || 0}. Downloaded ${data.downloaded || 0}. Skipped ${data.skipped || 0}. Failed ${data.failed || 0}.`;
           coverResultsList.innerHTML = '';
 
           (data.results || []).slice(0, 100).forEach((item) => {
             const li = document.createElement('li');
             li.className = `cover-result-item ${item.status}`;
-            li.textContent = `${item.status.toUpperCase()}: ${item.package}${item.titleId ? ' (' + item.titleId + ')' : ''}${item.source ? ' [' + item.source + ']' : ''}${item.reason ? ' - ' + item.reason : ''}${item.savedAs ? ' - saved as ' + item.savedAs : ''}`;
+            li.textContent = `${item.status.toUpperCase()}: ${item.package}${item.titleId ? ' (' + item.titleId + ')' : ''}${item.source ? ' [' + item.source + ']' : ''}${item.reason ? ' - ' + item.reason : ''}${item.savedAs ? ' - saved as ' + item.savedAs : ''}${item.folderThumbnail ? ' - folder thumbnail ' + item.folderThumbnail : ''}`;
             coverResultsList.appendChild(li);
           });
 
@@ -297,6 +298,7 @@
         } catch (error) {
           showToast(error.message, 'error');
           coverResults.hidden = false;
+          coverResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           coverResultsSummary.textContent = error.message;
           coverResultsList.innerHTML = '';
           downloadMissingCoversBtn.disabled = false;
