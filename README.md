@@ -23,10 +23,10 @@ The **Download missing covers** button searches in this order. The **Live debug*
 1. GitHub cover map
 2. PlayStation Store by CUSA
 3. SerialStation by CUSA
-4. Content ID lookup through PlayStation metadata
-5. SerialStation title search
-6. PlayStation Store title search
-7. ORBISPatches final fallback
+4. ORBISPatches by CUSA
+5. Content ID lookup
+6. SerialStation title search
+7. PlayStation Store title search
 
 The search engine checks for these title ID formats:
 CUSAxxxxx
