@@ -81,6 +81,8 @@ function normalizeSearchTitle(value) {
 
 
 const coverTitleAliases = {
+  CUSA00667: 'SingStar Mega Hits',
+  CUSA00501: 'SingStar Ultimate Party',
   SCUS97399: 'God of War',
   SCES54206: 'God of War II',
   SLUS22184: 'Resident Evil Code Veronica X',
@@ -402,17 +404,68 @@ async function runMissingCoverDownload(onProgress = null) {
         `Timed out after ${coverItemTimeoutMs}ms while searching ${item.type} - ${item.package || item.name}`
       );
     } catch (error) {
-      resultItem = {
-        package: item.package || item.name,
-        type: item.type,
-        targetName: item.targetName,
-        titleId,
-        searchTitle: item.searchTitle,
-        status: 'skipped',
-        reason: `${error.message}. Moving to next item.`
-      };
+      let timeoutRecovered = false;
 
-      results.push(resultItem);
+      if (titleId && isCusaTitleId(titleId) && coverEnableOrbisPatches) {
+        try {
+          emit({
+            kind: 'item-start',
+            index: i + 1,
+            total: missing.length,
+            item: {
+              package: item.package || item.name,
+              type: item.type,
+              titleId,
+              searchTitle: item.searchTitle,
+              fallback: 'Trying ORBISPatches after timeout'
+            },
+            counts: getCoverResultCounts(results)
+          });
+
+          const orbisLookup = await withTimeout(
+            findCoverUrlFromOrbisPatches(titleId),
+            Math.min(coverItemTimeoutMs, 15000),
+            `ORBISPatches fallback timed out for ${titleId}`
+          );
+
+          if (orbisLookup.url) {
+            const targetDir = item.type === 'thumbnail' ? thumbnailImagesPath : coverImagesPath;
+            const savedAs = await downloadImageToFolder(orbisLookup.url, item.targetName, targetDir);
+
+            resultItem = {
+              package: item.package || item.name,
+              type: item.type,
+              titleId,
+              searchTitle: item.searchTitle,
+              status: 'downloaded',
+              source: `${orbisLookup.source} after item timeout`,
+              savedAs,
+              savedTo: item.type === 'thumbnail' ? 'thumbnail' : 'images'
+            };
+
+            results.push(resultItem);
+            timeoutRecovered = true;
+          }
+        } catch (orbisError) {
+          // Fall through to skipped item below.
+        }
+      }
+
+      if (!timeoutRecovered) {
+        resultItem = {
+          package: item.package || item.name,
+          type: item.type,
+          targetName: item.targetName,
+          titleId,
+          searchTitle: item.searchTitle,
+          status: 'skipped',
+          shortReason: 'Timed out. Moving to next item.',
+          reason: `${error.message}. Moving to next item.`
+        };
+
+        results.push(resultItem);
+      }
+
       emit({
         kind: 'item-result',
         index: i + 1,
@@ -632,6 +685,10 @@ function flattenPkgs(pkgs) {
     .sort((a, b) => a.localeCompare(b))
     .map((root) => {
       const rootPkgs = pkgs[root].sort((a, b) => a.name.localeCompare(b.name));
+      rootPkgs.forEach((pkg) => {
+        pkg.displayName = pkg.displayName || `${pkg.name}.pkg`;
+        pkg.shortDisplayName = pkg.shortDisplayName || pkg.displayName;
+      });
       const bytes = rootPkgs.reduce((sum, pkg) => sum + pkg.bytes, 0);
       const firstPkg = rootPkgs[0] || { imgname: 'folder.png' };
       const folderThumbname = `${safeFileBase(root)}.jpg`;
@@ -998,7 +1055,21 @@ async function findCoverUrl(titleId, coverMap, item = {}) {
     }
   }
 
-  // 3. Content ID lookup, if the filename includes one.
+  // 3. ORBISPatches early fallback for CUSA IDs.
+  // Some titles are found quickly in ORBISPatches, while generic title searches can be slow.
+  // Trying ORBIS here prevents CUSA items from timing out before ORBIS is reached.
+  if (coverEnableOrbisPatches) {
+    for (const cusaId of cusaTitleIds) {
+      const orbisResult = await findCoverUrlFromOrbisPatches(cusaId);
+      tried.push(`ORBISPatches early ${cusaId}: ${orbisResult.reason || (orbisResult.url ? 'ok' : 'no result')}`);
+
+      if (orbisResult.url) {
+        return orbisResult;
+      }
+    }
+  }
+
+  // 4. Content ID lookup, if the filename includes one.
   if (contentId) {
     const contentResult = await findCoverUrlFromContentId(contentId);
     tried.push(`Content ID ${contentId}: ${contentResult.reason || (contentResult.url ? 'ok' : 'no result')}`);
@@ -1051,18 +1122,6 @@ async function findCoverUrl(titleId, coverMap, item = {}) {
 
       if (cleanerStoreResult.url) {
         return cleanerStoreResult;
-      }
-    }
-  }
-
-  // 5. ORBISPatches final fallback for CUSA only.
-  if (coverEnableOrbisPatches) {
-    for (const cusaId of cusaTitleIds) {
-      const orbisResult = await findCoverUrlFromOrbisPatches(cusaId);
-      tried.push(`ORBISPatches ${cusaId}: ${orbisResult.reason || (orbisResult.url ? 'ok' : 'no result')}`);
-
-      if (orbisResult.url) {
-        return orbisResult;
       }
     }
   }
