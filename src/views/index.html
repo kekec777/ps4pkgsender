@@ -1773,6 +1773,7 @@
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{id}}" aria-expanded="false" aria-controls="collapse_{{id}}">
               <span class="folder-name">
                 <img
+                  onerror="if(!this.dataset.fallbackApplied){this.dataset.fallbackApplied=1;this.src='/public/thumbnail/folder.png';}"
                   src="{{folderThumbUrl}}"
                   alt="{{root}} cover"
                   class="folder-cover"
@@ -1861,6 +1862,28 @@
       const goTopBtn = document.getElementById('goTopBtn');
 
 
+
+
+      function encodePublicImageUrls() {
+        document.querySelectorAll('img[src^="/public/"], button[data-image^="/public/"]').forEach((el) => {
+          const attrName = el.tagName.toLowerCase() === 'img' ? 'src' : 'data-image';
+          const value = el.getAttribute(attrName);
+
+          if (!value) return;
+
+          const match = value.match(/^\/public\/(images|thumbnail)\/(.+)$/);
+
+          if (!match) return;
+
+          try {
+            const encoded = `/public/${match[1]}/${encodeURIComponent(decodeURIComponent(match[2]))}`;
+            el.setAttribute(attrName, encoded);
+          } catch (error) {
+            const encoded = `/public/${match[1]}/${encodeURIComponent(match[2])}`;
+            el.setAttribute(attrName, encoded);
+          }
+        });
+      }
 
       function fixDoublePkgExtensions() {
         document.querySelectorAll('.pkg-title, [title], [data-title]').forEach((el) => {
@@ -2249,6 +2272,7 @@
       }
 
       fixDoublePkgExtensions();
+      encodePublicImageUrls();
             loadCurrentIp();
     });
   </script>
