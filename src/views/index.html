@@ -1709,6 +1709,32 @@
       box-shadow: 0 8px 20px rgba(15, 23, 42, 0.10) !important;
     }
 
+
+    /* Go-to-top arrow visibility fix */
+    .go-top-btn .go-top-arrow {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 1.5rem !important;
+      line-height: 1 !important;
+      font-weight: 900 !important;
+      color: inherit !important;
+      transform: translateY(-1px);
+      user-select: none;
+      pointer-events: none;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+    }
+
+    .go-top-btn i {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .go-top-btn .go-top-arrow {
+        font-size: 1.35rem !important;
+      }
+    }
+
 </style>
 
 </head>
@@ -2362,7 +2388,7 @@
   </script>
 
     <button id="goTopBtn" class="go-top-btn" type="button" aria-label="Go to top" title="Go to top">
-      <i class="fa-solid fa-arrow-up"></i>
+      <span class="go-top-arrow" aria-hidden="true">↑</span>
     </button>
 
   </body>
