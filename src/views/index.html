@@ -1861,6 +1861,23 @@
       const goTopBtn = document.getElementById('goTopBtn');
 
 
+
+      function fixDoublePkgExtensions() {
+        document.querySelectorAll('.pkg-title, [title], [data-title]').forEach((el) => {
+          if (el.textContent) {
+            el.textContent = el.textContent.replace(/\.pkg\.pkg$/i, '.pkg');
+          }
+
+          if (el.title) {
+            el.title = el.title.replace(/\.pkg\.pkg$/i, '.pkg');
+          }
+
+          if (el.dataset && el.dataset.title) {
+            el.dataset.title = el.dataset.title.replace(/\.pkg\.pkg$/i, '.pkg');
+          }
+        });
+      }
+
       function applyTheme(theme) {
         const allowedThemes = ['pkgsender', 'dark', 'light', 'ps4'];
         const selectedTheme = allowedThemes.includes(theme) ? theme : 'pkgsender';
@@ -2231,7 +2248,8 @@
         });
       }
 
-      loadCurrentIp();
+      fixDoublePkgExtensions();
+            loadCurrentIp();
     });
   </script>
 
