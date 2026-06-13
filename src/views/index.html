@@ -55,12 +55,1615 @@
     .cover-result-item.live-working {
       color: #93c5fd;
     }
+
+    .pkg-title {
+      display: block;
+      margin: 0 0 6px;
+      color: #e5edff;
+      font-size: clamp(0.9rem, 1.7vw, 1.05rem);
+      font-weight: 800;
+      line-height: 1.25;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .pkg-folder-path {
+      margin: 0;
+      color: #9fb0d0;
+      font-size: 0.88rem;
+    }
+
+    .pkg-info .pkg-title {
+      color: #e5edff !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    .go-top-btn {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 9999;
+      width: 52px;
+      height: 52px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.92);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(18px) scale(0.92);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease, background 180ms ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .go-top-btn.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .go-top-btn:hover {
+      background: rgba(59, 130, 246, 1);
+      transform: translateY(-2px) scale(1.03);
+    }
+
+    .go-top-btn i {
+      font-size: 1.15rem;
+    }
+
+    @media (max-width: 640px) {
+      .go-top-btn {
+        right: 14px;
+        bottom: 14px;
+        width: 46px;
+        height: 46px;
+      }
+    }
+
+
+    :root {
+      --app-bg: #0f172a;
+      --app-bg-soft: #111827;
+      --app-card: rgba(15, 23, 42, 0.86);
+      --app-card-strong: rgba(30, 41, 59, 0.92);
+      --app-card-border: rgba(148, 163, 184, 0.20);
+      --app-text: #e5edff;
+      --app-muted: #9fb0d0;
+      --app-muted-strong: #c7d2fe;
+      --app-accent: #38bdf8;
+      --app-accent-2: #2563eb;
+      --app-success: #2f9360;
+      --app-button-text: #ffffff;
+      --app-shadow: rgba(0, 0, 0, 0.35);
+      --app-input-bg: rgba(15, 23, 42, 0.65);
+      --app-input-border: rgba(148, 163, 184, 0.25);
+      --app-row-bg: rgba(15, 23, 42, 0.72);
+      --app-row-border: rgba(148, 163, 184, 0.18);
+      --app-folder-bg: rgba(30, 41, 59, 0.92);
+      --app-gradient: radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 34%),
+                      radial-gradient(circle at top right, rgba(37, 99, 235, 0.18), transparent 38%),
+                      linear-gradient(135deg, #0f172a, #111827 55%, #020617);
+    }
+
+    body[data-theme="dark"] {
+      --app-bg: #050816;
+      --app-bg-soft: #090d1a;
+      --app-card: rgba(8, 13, 26, 0.92);
+      --app-card-strong: rgba(17, 24, 39, 0.95);
+      --app-card-border: rgba(148, 163, 184, 0.16);
+      --app-text: #f8fafc;
+      --app-muted: #94a3b8;
+      --app-muted-strong: #cbd5e1;
+      --app-accent: #818cf8;
+      --app-accent-2: #4f46e5;
+      --app-success: #16a34a;
+      --app-button-text: #ffffff;
+      --app-shadow: rgba(0, 0, 0, 0.55);
+      --app-input-bg: rgba(2, 6, 23, 0.78);
+      --app-input-border: rgba(148, 163, 184, 0.18);
+      --app-row-bg: rgba(2, 6, 23, 0.76);
+      --app-row-border: rgba(148, 163, 184, 0.14);
+      --app-folder-bg: rgba(15, 23, 42, 0.95);
+      --app-gradient: radial-gradient(circle at top left, rgba(129, 140, 248, 0.13), transparent 34%),
+                      linear-gradient(135deg, #020617, #050816 60%, #000000);
+    }
+
+    body[data-theme="light"] {
+      --app-bg: #f3f6fb;
+      --app-bg-soft: #e8eef8;
+      --app-card: rgba(255, 255, 255, 0.88);
+      --app-card-strong: rgba(255, 255, 255, 0.96);
+      --app-card-border: rgba(15, 23, 42, 0.12);
+      --app-text: #0f172a;
+      --app-muted: #475569;
+      --app-muted-strong: #1e293b;
+      --app-accent: #2563eb;
+      --app-accent-2: #1d4ed8;
+      --app-success: #16834a;
+      --app-button-text: #ffffff;
+      --app-shadow: rgba(15, 23, 42, 0.12);
+      --app-input-bg: rgba(255, 255, 255, 0.88);
+      --app-input-border: rgba(15, 23, 42, 0.16);
+      --app-row-bg: rgba(255, 255, 255, 0.82);
+      --app-row-border: rgba(15, 23, 42, 0.10);
+      --app-folder-bg: rgba(235, 242, 255, 0.95);
+      --app-gradient: radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 32%),
+                      radial-gradient(circle at top right, rgba(14, 165, 233, 0.13), transparent 35%),
+                      linear-gradient(135deg, #f8fafc, #e8eef8);
+    }
+
+    body[data-theme="ps4"] {
+      --app-bg: #001b4d;
+      --app-bg-soft: #002a75;
+      --app-card: rgba(0, 31, 84, 0.88);
+      --app-card-strong: rgba(0, 57, 143, 0.92);
+      --app-card-border: rgba(141, 202, 255, 0.22);
+      --app-text: #eef7ff;
+      --app-muted: #b8d8ff;
+      --app-muted-strong: #d7ecff;
+      --app-accent: #00a3ff;
+      --app-accent-2: #006fcd;
+      --app-success: #00a86b;
+      --app-button-text: #ffffff;
+      --app-shadow: rgba(0, 18, 64, 0.45);
+      --app-input-bg: rgba(0, 25, 75, 0.68);
+      --app-input-border: rgba(141, 202, 255, 0.26);
+      --app-row-bg: rgba(0, 22, 66, 0.74);
+      --app-row-border: rgba(141, 202, 255, 0.18);
+      --app-folder-bg: rgba(0, 45, 120, 0.92);
+      --app-gradient: radial-gradient(circle at 12% 8%, rgba(0, 163, 255, 0.26), transparent 28%),
+                      radial-gradient(circle at 88% 16%, rgba(255, 255, 255, 0.12), transparent 22%),
+                      linear-gradient(135deg, #00113d, #003087 48%, #0057d9);
+    }
+
+    body {
+      background: var(--app-gradient) !important;
+      color: var(--app-text) !important;
+    }
+
+    .app-shell,
+    .panel-card,
+    .stat-card,
+    .accordion-item,
+    .pkg-folder,
+    .cover-results {
+      background: var(--app-card) !important;
+      border-color: var(--app-card-border) !important;
+      color: var(--app-text) !important;
+      box-shadow: 0 18px 40px var(--app-shadow);
+    }
+
+    .accordion-button {
+      background: var(--app-folder-bg) !important;
+      color: var(--app-text) !important;
+      border-color: var(--app-card-border) !important;
+    }
+
+    .accordion-button:not(.collapsed) {
+      background: var(--app-card-strong) !important;
+      color: var(--app-text) !important;
+    }
+
+    .pkg-row {
+      background: var(--app-row-bg) !important;
+      border-color: var(--app-row-border) !important;
+      color: var(--app-text) !important;
+    }
+
+    .pkg-title,
+    .pkg-info h3,
+    .panel-card h2,
+    .folder-name span,
+    .stat-card span {
+      color: var(--app-text) !important;
+    }
+
+    .pkg-info p,
+    .pkg-folder-path,
+    .eyebrow,
+    .stat-card small,
+    .folder-count,
+    .cover-results-live-status {
+      color: var(--app-muted) !important;
+    }
+
+    .search-box,
+    .theme-select-wrap,
+    .ip-form input,
+    .form-control,
+    .theme-select {
+      background: var(--app-input-bg) !important;
+      border-color: var(--app-input-border) !important;
+      color: var(--app-text) !important;
+    }
+
+    .theme-select {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      padding: 0;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .theme-select option {
+      background: var(--app-bg-soft);
+      color: var(--app-text);
+    }
+
+    .theme-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--app-input-border);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .theme-select-wrap i {
+      color: var(--app-accent);
+    }
+
+    .btn-primary,
+    .go-top-btn {
+      background: var(--app-accent-2) !important;
+      border-color: var(--app-accent) !important;
+      color: var(--app-button-text) !important;
+    }
+
+    .btn-success,
+    .install-btn {
+      background: var(--app-success) !important;
+      border-color: var(--app-success) !important;
+      color: var(--app-button-text) !important;
+    }
+
+    .btn-outline-light {
+      color: var(--app-text) !important;
+      border-color: var(--app-input-border) !important;
+    }
+
+    body[data-theme="light"] .btn-outline-light {
+      background: rgba(255, 255, 255, 0.55) !important;
+      color: #0f172a !important;
+    }
+
+    body[data-theme="light"] .cover-button img,
+    body[data-theme="light"] .folder-cover {
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
+    }
+
+    body[data-theme="ps4"] .app-shell::before {
+      content: "△ ○ × □";
+      position: fixed;
+      right: 26px;
+      top: 18px;
+      z-index: 0;
+      color: rgba(255, 255, 255, 0.16);
+      font-weight: 900;
+      letter-spacing: 12px;
+      font-size: clamp(1.8rem, 4vw, 4.4rem);
+      pointer-events: none;
+    }
+
+    body[data-theme="ps4"] .panel-card,
+    body[data-theme="ps4"] .accordion-item {
+      box-shadow: 0 20px 50px rgba(0, 20, 80, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    @media (max-width: 900px) {
+      .theme-card {
+        grid-column: 1 / -1;
+      }
+    }
+
+
+    .search-theme-card {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .filter-theme-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(240px, 0.95fr);
+      gap: 18px;
+      width: 100%;
+      align-items: end;
+    }
+
+    .filter-theme-block {
+      min-width: 0;
+    }
+
+    .filter-theme-block h2 {
+      margin-bottom: 10px;
+    }
+
+    .theme-inline-block .theme-select-wrap,
+    .filter-theme-block .search-box {
+      min-height: 52px;
+    }
+
+    .ps4-theme-art {
+      display: none;
+    }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art {
+      display: block;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body[data-theme="ps4"] .hero-card > *:not(.ps4-theme-art) {
+      position: relative;
+      z-index: 1;
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-symbols {
+      position: absolute;
+      right: 28px;
+      top: 16px;
+      color: rgba(255, 255, 255, 0.17);
+      font-size: clamp(1.7rem, 2vw, 2.7rem);
+      font-weight: 900;
+      letter-spacing: 10px;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.10);
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-console {
+      position: absolute;
+      right: 26px;
+      bottom: -8px;
+      width: 240px;
+      height: 150px;
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02) 36%),
+        linear-gradient(160deg, rgba(0,0,0,0.18), rgba(255,255,255,0.03) 45%, rgba(0,0,0,0.22)),
+        linear-gradient(135deg, rgba(0,92,205,0.70), rgba(0,27,77,0.28));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        0 18px 45px rgba(0, 19, 74, 0.35);
+      transform: skewX(-18deg) rotate(-8deg);
+      opacity: 0.9;
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-console::before,
+    body[data-theme="ps4"] .ps4-theme-art-console::after {
+      content: "";
+      position: absolute;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-console::before {
+      inset: 14px 20px 58px 24px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-console::after {
+      inset: 62px 26px 16px 62px;
+      opacity: 0.8;
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-controller {
+      position: absolute;
+      left: min(48%, 520px);
+      bottom: 18px;
+      width: 185px;
+      height: 88px;
+      opacity: 0.26;
+      filter: drop-shadow(0 10px 24px rgba(0, 10, 52, 0.42));
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cpath fill='%23ffffff' d='M128 62c20-9 124-9 144 0 13 6 32 30 39 56 5 20-4 41-20 48-12 5-28-4-37-16l-18-23H164l-18 23c-9 12-25 21-37 16-16-7-25-28-20-48 7-26 26-50 39-56Z' opacity='.90'/%3E%3Ccircle cx='132' cy='98' r='11' fill='%23003184'/%3E%3Crect x='114' y='92' width='36' height='12' rx='5' fill='%23003184'/%3E%3Crect x='126' y='80' width='12' height='36' rx='5' fill='%23003184'/%3E%3Ccircle cx='276' cy='92' r='8' fill='%23003184'/%3E%3Ccircle cx='300' cy='112' r='8' fill='%23003184'/%3E%3Ccircle cx='276' cy='132' r='8' fill='%23003184'/%3E%3Ccircle cx='252' cy='112' r='8' fill='%23003184'/%3E%3Ccircle cx='183' cy='112' r='16' fill='%23003184' opacity='.30'/%3E%3Ccircle cx='216' cy='112' r='16' fill='%23003184' opacity='.30'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+
+    body[data-theme="ps4"] .panel-card::before,
+    body[data-theme="ps4"] .accordion-item::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.10), transparent 30%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.07), transparent 30%);
+      opacity: 0.65;
+    }
+
+    body[data-theme="ps4"] .panel-card,
+    body[data-theme="ps4"] .accordion-item {
+      position: relative;
+      overflow: hidden;
+    }
+
+    body[data-theme="ps4"] .search-theme-card::after {
+      content: "△   ○   ×   □";
+      position: absolute;
+      right: 16px;
+      bottom: 10px;
+      color: rgba(255, 255, 255, 0.10);
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 5px;
+      pointer-events: none;
+    }
+
+    @media (max-width: 1100px) {
+      .filter-theme-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .theme-inline-block {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body[data-theme="ps4"] .ps4-theme-art-console {
+        width: 180px;
+        height: 114px;
+        right: 12px;
+        bottom: 10px;
+      }
+
+      body[data-theme="ps4"] .ps4-theme-art-controller {
+        width: 128px;
+        height: 62px;
+        left: auto;
+        right: 118px;
+        bottom: 12px;
+      }
+
+      body[data-theme="ps4"] .ps4-theme-art-symbols {
+        right: 14px;
+        top: 12px;
+        letter-spacing: 6px;
+        font-size: 1.2rem;
+      }
+    }
+
+
+    /* 50/50 top control layout */
+    .control-grid {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+      gap: 18px !important;
+      align-items: stretch !important;
+    }
+
+    .control-grid > .panel-card {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .ps4-card {
+      min-height: auto;
+    }
+
+    .ps4-card .panel-title-row {
+      margin-bottom: 12px;
+    }
+
+    .ps4-card .ip-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-theme-card {
+      min-height: auto;
+    }
+
+    .filter-theme-grid {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+      gap: 18px !important;
+      width: 100%;
+      align-items: end;
+    }
+
+    .filter-theme-block {
+      min-width: 0;
+    }
+
+    .filter-theme-block h2,
+    .ps4-card h2 {
+      font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+      margin-bottom: 10px;
+    }
+
+    .search-box,
+    .theme-select-wrap,
+    .ip-form input {
+      min-height: 48px;
+    }
+
+    @media (max-width: 1050px) {
+      .control-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .filter-theme-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .ps4-card .ip-form {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* More PS4 menu-inspired theme styling */
+    body[data-theme="ps4"] {
+      background:
+        radial-gradient(circle at 12% 8%, rgba(0, 174, 255, 0.30), transparent 26%),
+        radial-gradient(circle at 88% 4%, rgba(255, 255, 255, 0.12), transparent 18%),
+        linear-gradient(180deg, #0057d9 0%, #003087 38%, #00164f 100%) !important;
+    }
+
+    body[data-theme="ps4"]::before {
+      content: "";
+      position: fixed;
+      inset: -20vh -20vw;
+      z-index: -2;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 28% 35%, rgba(0, 180, 255, 0.20), transparent 32%),
+        radial-gradient(ellipse at 70% 65%, rgba(255, 255, 255, 0.10), transparent 30%);
+      filter: blur(2px);
+    }
+
+    body[data-theme="ps4"]::after {
+      content: "";
+      position: fixed;
+      left: -10vw;
+      right: -10vw;
+      top: 12vh;
+      height: 76vh;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.00) 30%, rgba(255,255,255,0.14) 45%, rgba(0,180,255,0.12) 52%, transparent 70%),
+        linear-gradient(74deg, transparent 0%, rgba(255,255,255,0.00) 42%, rgba(255,255,255,0.10) 52%, rgba(0,120,255,0.08) 58%, transparent 78%);
+      transform: skewY(-7deg);
+      animation: ps4WaveDrift 13s ease-in-out infinite alternate;
+      opacity: 0.95;
+    }
+
+    @keyframes ps4WaveDrift {
+      from {
+        transform: translateX(-4vw) skewY(-7deg);
+      }
+      to {
+        transform: translateX(4vw) skewY(-5deg);
+      }
+    }
+
+    body[data-theme="ps4"] .hero-card {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 36%, rgba(0,30,100,0.28)),
+        rgba(0, 49, 132, 0.42) !important;
+      border: 1px solid rgba(183, 226, 255, 0.25) !important;
+      box-shadow:
+        0 28px 80px rgba(0, 18, 82, 0.42),
+        inset 0 1px 0 rgba(255,255,255,0.16) !important;
+      backdrop-filter: blur(18px);
+    }
+
+    body[data-theme="ps4"] .hero-card::after {
+      content: "";
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      bottom: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(150,220,255,0.78), transparent);
+      box-shadow: 0 0 18px rgba(0, 200, 255, 0.45);
+      z-index: 1;
+    }
+
+    body[data-theme="ps4"] .hero-card h1 {
+      text-shadow: 0 0 26px rgba(0, 210, 255, 0.36);
+    }
+
+    body[data-theme="ps4"] .panel-card,
+    body[data-theme="ps4"] .accordion-item,
+    body[data-theme="ps4"] .pkg-row,
+    body[data-theme="ps4"] .cover-results {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 38%, rgba(0,26,80,0.28)),
+        rgba(0, 32, 94, 0.70) !important;
+      border: 1px solid rgba(173, 220, 255, 0.20) !important;
+      box-shadow:
+        0 18px 55px rgba(0, 15, 70, 0.42),
+        inset 0 1px 0 rgba(255,255,255,0.10) !important;
+      backdrop-filter: blur(14px);
+    }
+
+    body[data-theme="ps4"] .pkg-row {
+      transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
+    }
+
+    body[data-theme="ps4"] .pkg-row:hover {
+      transform: translateY(-2px);
+      border-color: rgba(152, 222, 255, 0.46) !important;
+      box-shadow:
+        0 22px 60px rgba(0, 18, 90, 0.50),
+        0 0 22px rgba(0, 163, 255, 0.18),
+        inset 0 1px 0 rgba(255,255,255,0.16) !important;
+    }
+
+    body[data-theme="ps4"] .accordion-button {
+      background:
+        linear-gradient(90deg, rgba(0, 74, 173, 0.88), rgba(0, 35, 104, 0.78)) !important;
+      border-bottom: 1px solid rgba(173, 220, 255, 0.14) !important;
+    }
+
+    body[data-theme="ps4"] .install-btn {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.12),
+        0 0 22px rgba(0, 255, 170, 0.16);
+    }
+
+    body[data-theme="ps4"] .btn-outline-light,
+    body[data-theme="ps4"] .theme-select-wrap,
+    body[data-theme="ps4"] .search-box,
+    body[data-theme="ps4"] .ip-form input {
+      background: rgba(0, 20, 72, 0.46) !important;
+      border-color: rgba(170, 220, 255, 0.24) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    body[data-theme="ps4"] .cover-button img,
+    body[data-theme="ps4"] .folder-cover {
+      box-shadow:
+        0 14px 34px rgba(0, 14, 62, 0.42),
+        0 0 0 1px rgba(180, 226, 255, 0.15);
+    }
+
+    body[data-theme="ps4"] .stat-card {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04)),
+        rgba(0, 36, 110, 0.52) !important;
+    }
+
+    body[data-theme="ps4"] .ps4-menu-strip {
+      display: flex;
+    }
+
+    .ps4-menu-strip {
+      display: none;
+      position: relative;
+      z-index: 1;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .ps4-menu-tile {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.05)),
+        rgba(0, 52, 145, 0.62);
+      border: 1px solid rgba(183, 226, 255, 0.26);
+      box-shadow:
+        0 12px 32px rgba(0, 13, 58, 0.32),
+        inset 0 1px 0 rgba(255,255,255,0.16);
+      color: rgba(255,255,255,0.88);
+      font-size: 1.25rem;
+      font-weight: 900;
+      text-shadow: 0 0 12px rgba(0, 210, 255, 0.28);
+    }
+
+    .ps4-menu-tile:nth-child(2) {
+      transform: translateY(6px);
+    }
+
+    .ps4-menu-tile:nth-child(3) {
+      transform: translateY(-4px);
+    }
+
+    .ps4-menu-tile:nth-child(4) {
+      transform: translateY(3px);
+    }
+
+
+    /* Remove controller/joystick background from PS4 theme */
+    body[data-theme="ps4"] .ps4-theme-art-controller,
+    .ps4-theme-art-controller {
+      display: none !important;
+      background-image: none !important;
+    }
+
+    /* Stronger PS4-inspired theme without joystick/controller art */
+    body[data-theme="ps4"] {
+      --app-bg: #003087;
+      --app-bg-soft: #001b5f;
+      --app-card: rgba(0, 40, 120, 0.68);
+      --app-card-strong: rgba(0, 73, 170, 0.76);
+      --app-card-border: rgba(174, 226, 255, 0.28);
+      --app-text: #f2f9ff;
+      --app-muted: #c2e2ff;
+      --app-muted-strong: #e4f4ff;
+      --app-accent: #00aeff;
+      --app-accent-2: #0070cc;
+      --app-success: #00b875;
+      --app-gradient:
+        radial-gradient(circle at 18% 8%, rgba(0, 210, 255, 0.36), transparent 26%),
+        radial-gradient(circle at 86% 12%, rgba(255, 255, 255, 0.16), transparent 20%),
+        linear-gradient(180deg, #0072ce 0%, #003087 43%, #00164d 100%);
+      background:
+        radial-gradient(circle at 18% 8%, rgba(0, 210, 255, 0.36), transparent 26%),
+        radial-gradient(circle at 86% 12%, rgba(255, 255, 255, 0.16), transparent 20%),
+        linear-gradient(180deg, #0072ce 0%, #003087 43%, #00164d 100%) !important;
+    }
+
+    body[data-theme="ps4"] .pkg-page {
+      position: relative;
+      isolation: isolate;
+    }
+
+    body[data-theme="ps4"] .pkg-page::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      background:
+        linear-gradient(120deg, transparent 0%, transparent 34%, rgba(255,255,255,0.10) 42%, rgba(0,188,255,0.16) 49%, transparent 64%),
+        linear-gradient(68deg, transparent 0%, transparent 42%, rgba(255,255,255,0.08) 51%, rgba(0,90,255,0.12) 60%, transparent 78%);
+      transform: skewY(-7deg);
+      animation: ps4WaveSlide 16s ease-in-out infinite alternate;
+    }
+
+    body[data-theme="ps4"] .pkg-page::after {
+      content: "△    ○    ×    □";
+      position: fixed;
+      right: 26px;
+      top: 18px;
+      z-index: -1;
+      color: rgba(255,255,255,0.13);
+      font-size: clamp(2.2rem, 5vw, 6rem);
+      font-weight: 900;
+      letter-spacing: 18px;
+      text-shadow: 0 0 28px rgba(0, 200, 255, 0.24);
+      pointer-events: none;
+    }
+
+    @keyframes ps4WaveSlide {
+      from {
+        transform: translateX(-5vw) skewY(-8deg);
+        opacity: 0.78;
+      }
+      to {
+        transform: translateX(5vw) skewY(-5deg);
+        opacity: 1;
+      }
+    }
+
+    body[data-theme="ps4"] .hero-card {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.06) 34%, rgba(0,32,118,0.36)),
+        rgba(0, 49, 132, 0.55) !important;
+      border: 1px solid rgba(190, 232, 255, 0.34) !important;
+      box-shadow:
+        0 30px 90px rgba(0, 13, 72, 0.48),
+        0 0 60px rgba(0, 170, 255, 0.16),
+        inset 0 1px 0 rgba(255,255,255,0.18) !important;
+      backdrop-filter: blur(20px);
+    }
+
+    body[data-theme="ps4"] .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255,255,255,0.16), transparent 28%),
+        linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.10) 50%, transparent 72%);
+    }
+
+    body[data-theme="ps4"] .hero-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-console {
+      right: 30px;
+      bottom: 8px;
+      width: 255px;
+      height: 132px;
+      opacity: 0.34;
+      border-radius: 14px;
+      transform: skewX(-22deg) rotate(-6deg);
+      background:
+        linear-gradient(115deg, rgba(255,255,255,0.20), rgba(255,255,255,0.03) 36%),
+        linear-gradient(160deg, rgba(0,0,0,0.34), rgba(0,70,180,0.18), rgba(0,0,0,0.28)),
+        rgba(0, 18, 70, 0.68) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        inset 0 -1px 0 rgba(0,0,0,0.30),
+        0 18px 60px rgba(0, 18, 80, 0.38);
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-console::before {
+      inset: 18px 18px 72px 18px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      box-shadow:
+        0 24px 0 rgba(0,0,0,0.16),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-console::after {
+      inset: auto 24px 28px 64px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(0,220,255,0.9), transparent);
+      box-shadow: 0 0 18px rgba(0, 220, 255, 0.55);
+      opacity: 1;
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-symbols {
+      right: 28px;
+      top: 18px;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 12px;
+      text-shadow: 0 0 22px rgba(0, 200, 255, 0.28);
+    }
+
+    body[data-theme="ps4"] .ps4-menu-strip {
+      display: flex;
+      gap: 14px;
+    }
+
+    body[data-theme="ps4"] .ps4-menu-tile {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.24), rgba(255,255,255,0.06)),
+        rgba(0, 75, 170, 0.76);
+      border-color: rgba(204, 240, 255, 0.34);
+      box-shadow:
+        0 16px 42px rgba(0, 12, 62, 0.42),
+        0 0 26px rgba(0, 174, 255, 0.16),
+        inset 0 1px 0 rgba(255,255,255,0.18);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    body[data-theme="ps4"] .ps4-menu-tile:hover {
+      transform: translateY(-5px) scale(1.04);
+      box-shadow:
+        0 20px 52px rgba(0, 12, 62, 0.50),
+        0 0 34px rgba(0, 190, 255, 0.28),
+        inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+
+    body[data-theme="ps4"] .panel-card,
+    body[data-theme="ps4"] .accordion-item,
+    body[data-theme="ps4"] .pkg-row,
+    body[data-theme="ps4"] .cover-results,
+    body[data-theme="ps4"] .stat-card {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.04) 38%, rgba(0,24,90,0.34)),
+        rgba(0, 34, 105, 0.72) !important;
+      border: 1px solid rgba(190, 232, 255, 0.24) !important;
+      box-shadow:
+        0 20px 58px rgba(0, 14, 70, 0.42),
+        inset 0 1px 0 rgba(255,255,255,0.13) !important;
+      backdrop-filter: blur(16px);
+    }
+
+    body[data-theme="ps4"] .accordion-button {
+      background:
+        linear-gradient(90deg, rgba(0, 115, 210, 0.80), rgba(0, 45, 132, 0.74)) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+
+    body[data-theme="ps4"] .pkg-row:hover,
+    body[data-theme="ps4"] .panel-card:hover {
+      border-color: rgba(206, 244, 255, 0.38) !important;
+      box-shadow:
+        0 24px 68px rgba(0, 14, 70, 0.48),
+        0 0 34px rgba(0, 174, 255, 0.16),
+        inset 0 1px 0 rgba(255,255,255,0.17) !important;
+    }
+
+    body[data-theme="ps4"] .btn-primary,
+    body[data-theme="ps4"] .go-top-btn {
+      background:
+        linear-gradient(135deg, #00aeff, #006fcd) !important;
+      border-color: rgba(215, 244, 255, 0.40) !important;
+      box-shadow:
+        0 0 28px rgba(0, 174, 255, 0.26),
+        inset 0 1px 0 rgba(255,255,255,0.20);
+    }
+
+    body[data-theme="ps4"] .install-btn {
+      background:
+        linear-gradient(135deg, #00d18b, #008a5d) !important;
+      box-shadow:
+        0 0 24px rgba(0, 255, 170, 0.20),
+        inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    body[data-theme="ps4"] .search-box,
+    body[data-theme="ps4"] .theme-select-wrap,
+    body[data-theme="ps4"] .ip-form input,
+    body[data-theme="ps4"] .form-control {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(0,20,78,0.34)) !important;
+      border-color: rgba(196, 235, 255, 0.28) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 0 18px rgba(0, 130, 255, 0.08);
+    }
+
+
+    /* Final theme/layout correction */
+    .control-grid {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+      gap: 18px !important;
+      align-items: stretch !important;
+    }
+
+    .control-grid > .panel-card,
+    .search-theme-card,
+    .ps4-card {
+      min-width: 0 !important;
+      width: 100% !important;
+      min-height: 250px !important;
+    }
+
+    .filter-theme-grid {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+      gap: 18px !important;
+      width: 100% !important;
+      align-items: end !important;
+    }
+
+    .ps4-card .ip-form {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      gap: 10px !important;
+      align-items: center !important;
+    }
+
+    .search-box,
+    .theme-select-wrap,
+    .ip-form input,
+    .form-control {
+      min-height: 50px !important;
+      border-radius: 16px !important;
+    }
+
+    .btn,
+    .install-btn,
+    .go-top-btn,
+    .library-actions .btn,
+    #downloadMissingCovers,
+    #expandAll,
+    #collapseAll,
+    #refreshAfterCovers,
+    .debug-live-toggle {
+      border-radius: 16px !important;
+      font-weight: 800 !important;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease !important;
+    }
+
+    .library-actions {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      flex-wrap: wrap !important;
+      gap: 10px !important;
+    }
+
+    .panel-title-row {
+      gap: 14px !important;
+    }
+
+    @media (max-width: 1050px) {
+      .control-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .control-grid > .panel-card,
+      .search-theme-card,
+      .ps4-card {
+        min-height: auto !important;
+      }
+
+      .filter-theme-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .ps4-card .ip-form {
+        grid-template-columns: 1fr !important;
+      }
+
+      .library-actions {
+        justify-content: flex-start !important;
+      }
+    }
+
+    /* Correct light theme */
+    body[data-theme="light"] {
+      --app-bg: #e8f1fb;
+      --app-bg-soft: #f8fbff;
+      --app-card: rgba(255, 255, 255, 0.92);
+      --app-card-strong: rgba(255, 255, 255, 0.98);
+      --app-card-border: rgba(37, 99, 235, 0.14);
+      --app-text: #0f172a;
+      --app-muted: #475569;
+      --app-muted-strong: #1e293b;
+      --app-accent: #2563eb;
+      --app-accent-2: #2563eb;
+      --app-success: #16834a;
+      --app-button-text: #ffffff;
+      --app-input-bg: rgba(255, 255, 255, 0.98);
+      --app-input-border: rgba(15, 23, 42, 0.18);
+      --app-row-bg: rgba(255, 255, 255, 0.94);
+      --app-row-border: rgba(15, 23, 42, 0.10);
+      --app-folder-bg: rgba(246, 249, 255, 0.98);
+      --app-gradient:
+        radial-gradient(circle at 12% 8%, rgba(37, 99, 235, 0.13), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(14, 165, 233, 0.14), transparent 28%),
+        linear-gradient(180deg, #eef7ff 0%, #dbeafe 100%);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(37, 99, 235, 0.13), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(14, 165, 233, 0.14), transparent 28%),
+        linear-gradient(180deg, #eef7ff 0%, #dbeafe 100%) !important;
+      color: #0f172a !important;
+    }
+
+    body[data-theme="light"] .hero-card {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.96), rgba(239,246,255,0.94)) !important;
+      border: 1px solid rgba(37, 99, 235, 0.16) !important;
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.12) !important;
+      color: #0f172a !important;
+    }
+
+    body[data-theme="light"] .hero-card h1,
+    body[data-theme="light"] .hero-card .eyebrow,
+    body[data-theme="light"] .hero-text,
+    body[data-theme="light"] .panel-card h2,
+    body[data-theme="light"] .pkg-title,
+    body[data-theme="light"] .folder-name span,
+    body[data-theme="light"] .stat-card span {
+      color: #0f172a !important;
+      opacity: 1 !important;
+    }
+
+    body[data-theme="light"] .hero-text,
+    body[data-theme="light"] .pkg-folder-path,
+    body[data-theme="light"] .pkg-info p,
+    body[data-theme="light"] .stat-card small,
+    body[data-theme="light"] .eyebrow {
+      color: #475569 !important;
+      opacity: 1 !important;
+    }
+
+    body[data-theme="light"] .stat-card,
+    body[data-theme="light"] .panel-card,
+    body[data-theme="light"] .accordion-item,
+    body[data-theme="light"] .pkg-folder,
+    body[data-theme="light"] .cover-results {
+      background: rgba(255, 255, 255, 0.94) !important;
+      border-color: rgba(37, 99, 235, 0.14) !important;
+      color: #0f172a !important;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.10) !important;
+    }
+
+    body[data-theme="light"] .stat-card {
+      background: rgba(248, 251, 255, 0.98) !important;
+    }
+
+    body[data-theme="light"] .accordion-button {
+      background: rgba(248, 251, 255, 0.98) !important;
+      color: #0f172a !important;
+      border-color: rgba(37, 99, 235, 0.14) !important;
+    }
+
+    body[data-theme="light"] .pkg-row {
+      background: rgba(255, 255, 255, 0.96) !important;
+      border-color: rgba(15, 23, 42, 0.10) !important;
+      color: #0f172a !important;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08) !important;
+    }
+
+    body[data-theme="light"] .search-box,
+    body[data-theme="light"] .theme-select-wrap,
+    body[data-theme="light"] .ip-form input,
+    body[data-theme="light"] .form-control,
+    body[data-theme="light"] .theme-select {
+      background: rgba(255, 255, 255, 0.98) !important;
+      border-color: rgba(15, 23, 42, 0.18) !important;
+      color: #0f172a !important;
+      box-shadow: none !important;
+    }
+
+    body[data-theme="light"] input::placeholder {
+      color: #94a3b8 !important;
+      opacity: 1 !important;
+    }
+
+    body[data-theme="light"] .btn-primary,
+    body[data-theme="light"] .go-top-btn {
+      background: #2563eb !important;
+      border-color: #2563eb !important;
+      color: #ffffff !important;
+      box-shadow: 0 10px 26px rgba(37, 99, 235, 0.24) !important;
+    }
+
+    body[data-theme="light"] .install-btn,
+    body[data-theme="light"] .btn-success {
+      background: #16834a !important;
+      border-color: #16834a !important;
+      color: #ffffff !important;
+      box-shadow: 0 10px 26px rgba(22, 131, 74, 0.22) !important;
+    }
+
+    body[data-theme="light"] .btn-outline-light,
+    body[data-theme="light"] .debug-live-toggle {
+      background: rgba(255, 255, 255, 0.98) !important;
+      color: #0f172a !important;
+      border-color: rgba(15, 23, 42, 0.18) !important;
+    }
+
+    body[data-theme="light"] .ip-pill {
+      background: #e0f2fe !important;
+      color: #0369a1 !important;
+    }
+
+    /* More PlayStation-oriented PS4 theme, no joystick/controller */
+    body[data-theme="ps4"] .ps4-theme-art-controller,
+    .ps4-theme-art-controller {
+      display: none !important;
+      background-image: none !important;
+    }
+
+    body[data-theme="ps4"] {
+      --app-bg: #003087;
+      --app-bg-soft: #001b5f;
+      --app-card: rgba(0, 37, 110, 0.72);
+      --app-card-strong: rgba(0, 84, 180, 0.80);
+      --app-card-border: rgba(190, 232, 255, 0.30);
+      --app-text: #f2f9ff;
+      --app-muted: #c2e2ff;
+      --app-muted-strong: #e4f4ff;
+      --app-accent: #00aeff;
+      --app-accent-2: #0070cc;
+      --app-success: #00b875;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(0, 210, 255, 0.38), transparent 25%),
+        radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.14), transparent 20%),
+        linear-gradient(180deg, #0072ce 0%, #003087 44%, #00164d 100%) !important;
+      color: #f2f9ff !important;
+    }
+
+    body[data-theme="ps4"] .pkg-page {
+      position: relative;
+      isolation: isolate;
+    }
+
+    body[data-theme="ps4"] .pkg-page::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      background:
+        linear-gradient(116deg, transparent 0%, transparent 34%, rgba(255,255,255,0.12) 43%, rgba(0,188,255,0.18) 51%, transparent 66%),
+        linear-gradient(68deg, transparent 0%, transparent 43%, rgba(255,255,255,0.08) 52%, rgba(0,90,255,0.12) 61%, transparent 79%);
+      transform: skewY(-7deg);
+      animation: ps4WaveSlide2 16s ease-in-out infinite alternate;
+    }
+
+    body[data-theme="ps4"] .pkg-page::after {
+      content: "△    ○    ×    □";
+      position: fixed;
+      right: 22px;
+      top: 18px;
+      z-index: -1;
+      color: rgba(255,255,255,0.14);
+      font-size: clamp(2rem, 5vw, 6rem);
+      font-weight: 900;
+      letter-spacing: 18px;
+      text-shadow: 0 0 28px rgba(0, 200, 255, 0.28);
+      pointer-events: none;
+    }
+
+    @keyframes ps4WaveSlide2 {
+      from {
+        transform: translateX(-5vw) skewY(-8deg);
+        opacity: 0.80;
+      }
+      to {
+        transform: translateX(5vw) skewY(-5deg);
+        opacity: 1;
+      }
+    }
+
+    body[data-theme="ps4"] .hero-card {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05) 34%, rgba(0,32,118,0.38)),
+        rgba(0, 49, 132, 0.58) !important;
+      border: 1px solid rgba(204, 240, 255, 0.34) !important;
+      box-shadow:
+        0 30px 90px rgba(0, 13, 72, 0.48),
+        0 0 60px rgba(0, 174, 255, 0.18),
+        inset 0 1px 0 rgba(255,255,255,0.18) !important;
+      backdrop-filter: blur(20px);
+      color: #f2f9ff !important;
+    }
+
+    body[data-theme="ps4"] .hero-card h1 {
+      color: #ffffff !important;
+      text-shadow: 0 0 24px rgba(0, 210, 255, 0.42);
+    }
+
+    body[data-theme="ps4"] .hero-card .eyebrow,
+    body[data-theme="ps4"] .hero-text {
+      color: #d7ecff !important;
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-console {
+      right: 30px;
+      bottom: 8px;
+      width: 270px;
+      height: 132px;
+      opacity: 0.32;
+      border-radius: 14px;
+      transform: skewX(-22deg) rotate(-6deg);
+      background:
+        linear-gradient(115deg, rgba(255,255,255,0.22), rgba(255,255,255,0.03) 36%),
+        linear-gradient(160deg, rgba(0,0,0,0.36), rgba(0,70,180,0.20), rgba(0,0,0,0.30)),
+        rgba(0, 18, 70, 0.72) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        inset 0 -1px 0 rgba(0,0,0,0.30),
+        0 18px 60px rgba(0, 18, 80, 0.38);
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-console::after {
+      inset: auto 24px 28px 64px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(0,220,255,0.95), transparent);
+      box-shadow: 0 0 18px rgba(0, 220, 255, 0.62);
+      opacity: 1;
+    }
+
+    body[data-theme="ps4"] .ps4-xmb-row {
+      display: flex;
+    }
+
+    .ps4-xmb-row {
+      display: none;
+      gap: 14px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .ps4-xmb-row span,
+    body[data-theme="ps4"] .ps4-menu-tile {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.24), rgba(255,255,255,0.06)),
+        rgba(0, 75, 170, 0.76);
+      border: 1px solid rgba(204, 240, 255, 0.34);
+      box-shadow:
+        0 16px 42px rgba(0, 12, 62, 0.42),
+        0 0 26px rgba(0, 174, 255, 0.16),
+        inset 0 1px 0 rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.90);
+      font-size: 1.22rem;
+      font-weight: 900;
+      text-shadow: 0 0 12px rgba(0, 210, 255, 0.28);
+    }
+
+    body[data-theme="ps4"] .panel-card,
+    body[data-theme="ps4"] .accordion-item,
+    body[data-theme="ps4"] .pkg-row,
+    body[data-theme="ps4"] .cover-results,
+    body[data-theme="ps4"] .stat-card {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.04) 38%, rgba(0,24,90,0.34)),
+        rgba(0, 34, 105, 0.74) !important;
+      border: 1px solid rgba(190, 232, 255, 0.25) !important;
+      box-shadow:
+        0 20px 58px rgba(0, 14, 70, 0.42),
+        inset 0 1px 0 rgba(255,255,255,0.13) !important;
+      backdrop-filter: blur(16px);
+    }
+
+    body[data-theme="ps4"] .pkg-row:hover,
+    body[data-theme="ps4"] .panel-card:hover {
+      border-color: rgba(206, 244, 255, 0.40) !important;
+      box-shadow:
+        0 24px 68px rgba(0, 14, 70, 0.48),
+        0 0 34px rgba(0, 174, 255, 0.18),
+        inset 0 1px 0 rgba(255,255,255,0.17) !important;
+    }
+
+    body[data-theme="ps4"] .accordion-button {
+      background:
+        linear-gradient(90deg, rgba(0, 115, 210, 0.82), rgba(0, 45, 132, 0.76)) !important;
+      color: #ffffff !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+
+    body[data-theme="ps4"] .search-box,
+    body[data-theme="ps4"] .theme-select-wrap,
+    body[data-theme="ps4"] .ip-form input,
+    body[data-theme="ps4"] .form-control {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(0,20,78,0.34)) !important;
+      border-color: rgba(196, 235, 255, 0.30) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 0 18px rgba(0, 130, 255, 0.08);
+    }
+
+    body[data-theme="ps4"] .btn-primary,
+    body[data-theme="ps4"] .go-top-btn {
+      background: linear-gradient(135deg, #00aeff, #006fcd) !important;
+      border-color: rgba(215, 244, 255, 0.42) !important;
+      color: #ffffff !important;
+      box-shadow:
+        0 0 28px rgba(0, 174, 255, 0.28),
+        inset 0 1px 0 rgba(255,255,255,0.20);
+    }
+
+    body[data-theme="ps4"] .install-btn,
+    body[data-theme="ps4"] .btn-success {
+      background: linear-gradient(135deg, #00d18b, #008a5d) !important;
+      border-color: rgba(190, 255, 230, 0.32) !important;
+      color: #ffffff !important;
+      box-shadow:
+        0 0 24px rgba(0, 255, 170, 0.20),
+        inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+
+    /* PS4 theme locked layout: same positions/sizes as the other themes */
+    body[data-theme="ps4"] .hero-card {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.55fr) !important;
+      align-items: center !important;
+      gap: 28px !important;
+      min-height: unset !important;
+      padding: clamp(28px, 4vw, 48px) !important;
+      text-align: left !important;
+    }
+
+    body[data-theme="ps4"] .hero-card > div:not(.hero-stats):not(.ps4-theme-art) {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+      text-align: left !important;
+      max-width: 880px !important;
+      margin: 0 !important;
+      justify-self: start !important;
+    }
+
+    body[data-theme="ps4"] .hero-stats {
+      grid-column: 2 !important;
+      grid-row: 1 !important;
+      justify-self: end !important;
+      align-self: center !important;
+      width: 100% !important;
+      max-width: 420px !important;
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 14px !important;
+      margin: 0 !important;
+      transform: none !important;
+      position: relative !important;
+      z-index: 2 !important;
+    }
+
+    body[data-theme="ps4"] .hero-stats .wide {
+      grid-column: 1 / -1 !important;
+    }
+
+    body[data-theme="ps4"] .stat-card {
+      min-height: 110px !important;
+      width: auto !important;
+      transform: none !important;
+    }
+
+    body[data-theme="ps4"] .ps4-menu-strip,
+    body[data-theme="ps4"] .ps4-xmb-row {
+      margin-top: 16px !important;
+      justify-content: flex-start !important;
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art {
+      position: absolute !important;
+      inset: 0 !important;
+      z-index: 0 !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+    }
+
+    body[data-theme="ps4"] .hero-card > *:not(.ps4-theme-art) {
+      position: relative !important;
+      z-index: 2 !important;
+    }
+
+    /* Remove layout-breaking background console from the visible top area.
+       Use subtle PlayStation shapes instead. */
+    body[data-theme="ps4"] .ps4-theme-art-console {
+      display: none !important;
+    }
+
+    body[data-theme="ps4"] .ps4-theme-art-symbols {
+      position: absolute !important;
+      right: 26px !important;
+      top: 18px !important;
+      color: rgba(255,255,255,0.13) !important;
+      font-size: clamp(1.5rem, 3vw, 3.8rem) !important;
+      font-weight: 900 !important;
+      letter-spacing: 14px !important;
+      text-shadow: 0 0 24px rgba(0, 200, 255, 0.26) !important;
+      transform: none !important;
+    }
+
+    body[data-theme="ps4"] .hero-card::before {
+      content: "" !important;
+      position: absolute !important;
+      inset: 0 !important;
+      z-index: 0 !important;
+      pointer-events: none !important;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(0, 210, 255, 0.22), transparent 28%),
+        linear-gradient(110deg, transparent 0%, transparent 39%, rgba(255,255,255,0.10) 48%, rgba(0,180,255,0.10) 55%, transparent 72%) !important;
+      opacity: 0.95 !important;
+    }
+
+    body[data-theme="ps4"] .hero-card::after {
+      content: "" !important;
+      position: absolute !important;
+      left: 28px !important;
+      right: 28px !important;
+      bottom: 20px !important;
+      height: 2px !important;
+      border-radius: 999px !important;
+      background: linear-gradient(90deg, transparent, rgba(130, 225, 255, 0.75), transparent) !important;
+      box-shadow: 0 0 18px rgba(0, 200, 255, 0.42) !important;
+      z-index: 1 !important;
+    }
+
+    /* More PlayStation look without changing layout */
+    body[data-theme="ps4"] {
+      background:
+        radial-gradient(circle at 18% 0%, rgba(0, 210, 255, 0.32), transparent 26%),
+        radial-gradient(circle at 88% 10%, rgba(255, 255, 255, 0.13), transparent 20%),
+        linear-gradient(180deg, #0072ce 0%, #003087 42%, #00164d 100%) !important;
+    }
+
+    body[data-theme="ps4"] .pkg-page::before {
+      background:
+        linear-gradient(116deg, transparent 0%, transparent 36%, rgba(255,255,255,0.12) 45%, rgba(0,188,255,0.15) 52%, transparent 68%),
+        linear-gradient(68deg, transparent 0%, transparent 44%, rgba(255,255,255,0.08) 53%, rgba(0,90,255,0.10) 62%, transparent 80%) !important;
+      opacity: 0.78 !important;
+    }
+
+    body[data-theme="ps4"] .hero-card,
+    body[data-theme="ps4"] .panel-card,
+    body[data-theme="ps4"] .accordion-item,
+    body[data-theme="ps4"] .pkg-row,
+    body[data-theme="ps4"] .cover-results,
+    body[data-theme="ps4"] .stat-card {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.035) 38%, rgba(0,24,90,0.32)),
+        rgba(0, 34, 105, 0.74) !important;
+      border-color: rgba(190, 232, 255, 0.24) !important;
+      color: #f2f9ff !important;
+    }
+
+    body[data-theme="ps4"] .hero-card h1,
+    body[data-theme="ps4"] .panel-card h2,
+    body[data-theme="ps4"] .pkg-title,
+    body[data-theme="ps4"] .folder-name span,
+    body[data-theme="ps4"] .stat-card span {
+      color: #ffffff !important;
+      text-shadow: 0 0 20px rgba(0, 174, 255, 0.24) !important;
+    }
+
+    body[data-theme="ps4"] .hero-text,
+    body[data-theme="ps4"] .eyebrow,
+    body[data-theme="ps4"] .pkg-folder-path,
+    body[data-theme="ps4"] .pkg-info p,
+    body[data-theme="ps4"] .stat-card small {
+      color: #c8e7ff !important;
+    }
+
+    body[data-theme="ps4"] .ps4-xmb-row span,
+    body[data-theme="ps4"] .ps4-menu-tile {
+      width: 50px !important;
+      height: 50px !important;
+      border-radius: 16px !important;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.05)),
+        rgba(0, 75, 170, 0.70) !important;
+      border: 1px solid rgba(204, 240, 255, 0.30) !important;
+      box-shadow:
+        0 12px 32px rgba(0, 12, 62, 0.34),
+        0 0 22px rgba(0, 174, 255, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.16) !important;
+    }
+
+    @media (max-width: 1050px) {
+      body[data-theme="ps4"] .hero-card {
+        grid-template-columns: 1fr !important;
+      }
+
+      body[data-theme="ps4"] .hero-card > div:not(.hero-stats):not(.ps4-theme-art),
+      body[data-theme="ps4"] .hero-stats {
+        grid-column: 1 !important;
+        grid-row: auto !important;
+        justify-self: stretch !important;
+        max-width: none !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body[data-theme="ps4"] .hero-stats {
+        grid-template-columns: 1fr !important;
+      }
+
+      body[data-theme="ps4"] .ps4-theme-art-symbols {
+        opacity: 0.45 !important;
+        letter-spacing: 8px !important;
+      }
+    }
+
 </style>
 
 </head>
 <body>
   <main class="pkg-page">
     <section class="hero-card">
+      <div class="ps4-theme-art" aria-hidden="true">
+        <div class="ps4-theme-art-symbols">△ ○ × □</div>
+        <div class="ps4-theme-art-console"></div>
+      </div>
       <div>
         <p class="eyebrow">PS4 PKG Sender</p>
         <h1>Package library</h1>
@@ -101,14 +1704,33 @@
         </form>
       </article>
 
-      <article class="panel-card search-card">
-        <p class="eyebrow">Filter</p>
-        <h2>Find a package</h2>
-        <div class="search-box">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input id="pkgSearch" type="search" placeholder="Search by package name or folder...">
+      <article class="panel-card search-card search-theme-card">
+        <div class="filter-theme-grid">
+          <div class="filter-theme-block">
+            <p class="eyebrow">Filter</p>
+            <h2>Find a package</h2>
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input id="pkgSearch" type="search" placeholder="Search by package name or folder...">
+            </div>
+          </div>
+
+          <div class="filter-theme-block theme-inline-block">
+            <p class="eyebrow">Theme</p>
+            <h2>Choose style</h2>
+            <div class="theme-select-wrap">
+              <i class="fa-solid fa-palette"></i>
+              <select id="themeSelect" class="theme-select" aria-label="Choose theme">
+                <option value="pkgsender">Pkgsender theme</option>
+                <option value="dark">Dark theme</option>
+                <option value="light">Light theme</option>
+                <option value="ps4">PS4 theme</option>
+              </select>
+            </div>
+          </div>
         </div>
       </article>
+
     </section>
 
     <section class="panel-card">
@@ -173,8 +1795,8 @@
                 </button>
 
                 <div class="pkg-info">
-                  <h3 title="{{displayName}}">{{displayName}}</h3>
-                  <p>{{dir}}</p>
+                  <h3 class="pkg-title" title="{{displayName}}">{{displayName}}</h3>
+                  <p class="pkg-folder-path">{{dir}}</p>
                 </div>
 
                 <div class="pkg-meta">
@@ -235,6 +1857,29 @@
       const modalImage = document.getElementById('modalImage');
       const modalCaption = document.getElementById('modalCaption');
       const toastArea = document.getElementById('toastArea');
+      const themeSelect = document.getElementById('themeSelect');
+      const goTopBtn = document.getElementById('goTopBtn');
+
+
+      function applyTheme(theme) {
+        const allowedThemes = ['pkgsender', 'dark', 'light', 'ps4'];
+        const selectedTheme = allowedThemes.includes(theme) ? theme : 'pkgsender';
+
+        document.body.dataset.theme = selectedTheme;
+        localStorage.setItem('pkgsender-theme', selectedTheme);
+
+        if (themeSelect) {
+          themeSelect.value = selectedTheme;
+        }
+      }
+
+      applyTheme(localStorage.getItem('pkgsender-theme') || 'pkgsender');
+
+      if (themeSelect) {
+        themeSelect.addEventListener('change', () => {
+          applyTheme(themeSelect.value);
+        });
+      }
 
       function showToast(message, type = 'info') {
         const toast = document.createElement('div');
@@ -424,6 +2069,29 @@
         });
       }
 
+
+      function updateGoTopButton() {
+        if (!goTopBtn) return;
+
+        if (window.scrollY > 420) {
+          goTopBtn.classList.add('show');
+        } else {
+          goTopBtn.classList.remove('show');
+        }
+      }
+
+      window.addEventListener('scroll', updateGoTopButton, { passive: true });
+      updateGoTopButton();
+
+      if (goTopBtn) {
+        goTopBtn.addEventListener('click', () => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+      }
+
       async function loadCurrentIp() {
         try {
           const data = await requestJson('/api/ps4ip');
@@ -566,5 +2234,10 @@
       loadCurrentIp();
     });
   </script>
-</body>
+
+    <button id="goTopBtn" class="go-top-btn" type="button" aria-label="Go to top" title="Go to top">
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+  </body>
 </html>
