@@ -154,6 +154,12 @@ function cleanCoverSearchTitle(value) {
 }
 
 
+
+function getPkgDisplayName(pkg) {
+  const raw = String((pkg && (pkg.displayName || pkg.shortDisplayName || pkg.fileName || pkg.filename || pkg.name)) || 'Unknown.pkg');
+  return raw.toLowerCase().endsWith('.pkg') ? raw : `${raw}.pkg`;
+}
+
 function buildSearchTitle(root, pkgName = '') {
   const alias = getBestAliasTitle(`${root} ${pkgName}`);
   if (alias) return alias;
@@ -686,7 +692,7 @@ function flattenPkgs(pkgs) {
     .map((root) => {
       const rootPkgs = pkgs[root].sort((a, b) => a.name.localeCompare(b.name));
       rootPkgs.forEach((pkg) => {
-        pkg.displayName = pkg.displayName || `${pkg.name}.pkg`;
+        pkg.displayName = getPkgDisplayName(pkg);
         pkg.shortDisplayName = pkg.shortDisplayName || pkg.displayName;
       });
       const bytes = rootPkgs.reduce((sum, pkg) => sum + pkg.bytes, 0);
