@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/css/brands.min.css">
   <link rel="stylesheet" href="/css/solid.min.css">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=20260615-readable-theme-v1">
+  <link rel="stylesheet" href="/css/style.css?v=20260615-manual-refresh-v1">
 
   <style id="pkgsender-readable-theme-fix">
     #topThemeStage > .hero-card.has-card-theme-image,
@@ -1526,6 +1526,63 @@
         return message;
       }
 
+      function removeCoverRefreshToast() {
+        document.querySelectorAll('.cover-refresh-toast').forEach(function (toast) {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        });
+      }
+
+      function showCoverDownloadResult(data, type) {
+        data = data || {};
+        var downloaded = Number(data.downloaded || 0);
+        var message = coverToastText(data);
+
+        if (downloaded <= 0) {
+          showToast(message, type || 'info');
+          return;
+        }
+
+        var toastArea = document.getElementById('toastArea');
+        if (!toastArea) {
+          showToast(message, type || 'success');
+          return;
+        }
+
+        removeCoverRefreshToast();
+
+        var toast = document.createElement('div');
+        toast.className = 'app-toast cover-refresh-toast ' + (type || 'success');
+
+        var text = document.createElement('div');
+        text.className = 'cover-refresh-toast-text';
+        text.textContent = message;
+
+        var actions = document.createElement('div');
+        actions.className = 'cover-refresh-toast-actions';
+
+        var refreshButton = document.createElement('button');
+        refreshButton.type = 'button';
+        refreshButton.className = 'btn btn-primary btn-sm cover-refresh-toast-button';
+        refreshButton.innerHTML = '<i class="fa-solid fa-rotate"></i> Refresh page';
+        refreshButton.addEventListener('click', function () {
+          window.location.reload();
+        });
+
+        var closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'btn btn-outline-light btn-sm cover-refresh-toast-close';
+        closeButton.textContent = 'Close';
+        closeButton.addEventListener('click', function () {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        });
+
+        actions.appendChild(refreshButton);
+        actions.appendChild(closeButton);
+        toast.appendChild(text);
+        toast.appendChild(actions);
+        toastArea.appendChild(toast);
+      }
+
       function formatCoverResultText(item) {
         if (!item) return '';
         var status = item.status ? String(item.status).toUpperCase() : 'INFO';
@@ -1628,7 +1685,7 @@
         requestJson('/api/covers/download-missing', { method: 'POST' }).then(function (data) {
           var type = Number(data.failed || 0) > 0 ? 'error' : 'success';
           console.log('Cover download results:', data);
-          showToast(coverToastText(data), type);
+          showCoverDownloadResult(data, type);
         }).catch(function (error) {
           showToast(error.message || 'Download missing covers failed.', 'error');
         }).finally(function () {
@@ -1686,7 +1743,7 @@
             if (box) box.classList.add(type);
             setDebugSummary(result);
             setDebugStatus('Finished.');
-            showToast(coverToastText(result), type);
+            showCoverDownloadResult(result, type);
             finishDownloadButton(button, originalHtml);
             return;
           }

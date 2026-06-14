@@ -1665,3 +1665,39 @@ body.modal-open {
 #topThemeStage .has-card-theme-image .search-box input::placeholder {
   color: rgba(239, 246, 255, 0.72) !important;
 }
+
+
+/* Manual refresh toast shown only when new covers/images were downloaded */
+.cover-refresh-toast {
+  width: min(470px, calc(100vw - 36px));
+  display: grid;
+  gap: 12px;
+}
+
+.cover-refresh-toast-text {
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.cover-refresh-toast-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.cover-refresh-toast-button,
+.cover-refresh-toast-close {
+  min-height: 38px;
+}
+
+@media (max-width: 560px) {
+  .cover-refresh-toast-actions {
+    justify-content: stretch;
+  }
+
+  .cover-refresh-toast-actions .btn {
+    flex: 1 1 auto;
+  }
+}
