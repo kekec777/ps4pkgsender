@@ -9,12 +9,227 @@
   <link rel="stylesheet" href="/css/brands.min.css">
   <link rel="stylesheet" href="/css/solid.min.css">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=20260614-continuous-card-theme">
+  <link rel="stylesheet" href="/css/style.css?v=20260615-final-debug-theme-align">
+
+
+  <style id="pkgsender-final-debug-theme-align-fix">
+    #topThemeStage,
+    #topThemeStage.top-theme-stage,
+    #topThemeStage.top-theme-stage.has-theme-image,
+    #topThemeStage > .control-grid {
+      --top-theme-image: none !important;
+      background: transparent !important;
+      background-image: none !important;
+      box-shadow: none !important;
+    }
+
+    #topThemeStage .top-theme-stage-bg,
+    .top-theme-stage-bg {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      background: none !important;
+      background-image: none !important;
+    }
+
+    #topThemeStage > .hero-card,
+    #topThemeStage > .control-grid > .panel-card.ps4-card,
+    #topThemeStage > .control-grid > .panel-card.search-card.search-theme-card,
+    #topThemeStage > .control-grid > .panel-card.search-theme-card {
+      overflow: hidden !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    #topThemeStage > .hero-card.has-card-theme-image,
+    #topThemeStage > .control-grid > .panel-card.ps4-card.has-card-theme-image,
+    #topThemeStage > .control-grid > .panel-card.search-card.search-theme-card.has-card-theme-image,
+    #topThemeStage > .control-grid > .panel-card.search-theme-card.has-card-theme-image {
+      background-repeat: no-repeat !important;
+      background-color: rgba(5, 10, 24, 0.12) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    #topThemeStage > .hero-card.has-card-theme-image::before,
+    #topThemeStage > .control-grid > .panel-card.ps4-card.has-card-theme-image::before,
+    #topThemeStage > .control-grid > .panel-card.search-card.search-theme-card.has-card-theme-image::before,
+    #topThemeStage > .control-grid > .panel-card.search-theme-card.has-card-theme-image::before {
+      content: none !important;
+      display: none !important;
+      background: none !important;
+      background-image: none !important;
+    }
+
+    #topThemeStage > .control-grid {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+      gap: 18px !important;
+      align-items: stretch !important;
+    }
+
+    #topThemeStage > .control-grid > .panel-card.ps4-card,
+    #topThemeStage > .control-grid > .panel-card.search-card.search-theme-card,
+    #topThemeStage > .control-grid > .panel-card.search-theme-card {
+      min-height: 230px !important;
+      padding: 28px 30px !important;
+      display: grid !important;
+      grid-template-rows: auto 1fr auto !important;
+      align-content: stretch !important;
+      align-items: stretch !important;
+    }
+
+    #topThemeStage .panel-card.ps4-card .panel-title-row {
+      grid-row: 1 !important;
+      margin: 0 !important;
+      align-items: flex-start !important;
+    }
+
+    #topThemeStage .panel-card.ps4-card .ip-form {
+      grid-row: 3 !important;
+      margin-top: 0 !important;
+      align-self: end !important;
+    }
+
+    #topThemeStage .panel-card.search-theme-card .filter-theme-grid {
+      grid-row: 1 / 4 !important;
+      height: 100% !important;
+      margin: 0 !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+      gap: 24px !important;
+      align-items: stretch !important;
+    }
+
+    #topThemeStage .panel-card.search-theme-card .filter-theme-block {
+      height: 100% !important;
+      min-height: 0 !important;
+      display: grid !important;
+      grid-template-rows: auto auto 1fr auto !important;
+      align-content: stretch !important;
+      align-items: stretch !important;
+    }
+
+    #topThemeStage .panel-card.ps4-card .eyebrow,
+    #topThemeStage .panel-card.search-theme-card .eyebrow {
+      margin: 0 0 12px !important;
+    }
+
+    #topThemeStage .panel-card.ps4-card h2,
+    #topThemeStage .panel-card.search-theme-card h2 {
+      margin: 0 !important;
+      line-height: 1.15 !important;
+    }
+
+    #topThemeStage .panel-card.search-theme-card .search-box,
+    #topThemeStage .panel-card.search-theme-card .theme-select-wrap {
+      grid-row: 4 !important;
+      align-self: end !important;
+      margin-top: 0 !important;
+    }
+
+    .cover-debug-standalone-area {
+      width: 100% !important;
+      margin: 14px 0 18px !important;
+      display: block !important;
+    }
+
+    .cover-debug-standalone-area[hidden],
+    .cover-debug-box[hidden] {
+      display: none !important;
+    }
+
+    .cover-debug-box {
+      width: 100% !important;
+      max-height: 390px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px !important;
+      padding: 16px 18px !important;
+      color: var(--text) !important;
+      background: rgba(6, 10, 24, 0.96) !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+      border-left: 5px solid var(--accent-2) !important;
+      border-radius: 18px !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.38) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    .cover-debug-box.success { border-left-color: var(--accent) !important; }
+    .cover-debug-box.error { border-left-color: var(--danger) !important; }
+
+    .cover-debug-header {
+      display: flex !important;
+      align-items: flex-start !important;
+      justify-content: space-between !important;
+      gap: 14px !important;
+    }
+
+    .cover-debug-header h3 {
+      margin: 0 !important;
+      color: var(--text) !important;
+      font-size: 1.05rem !important;
+      font-weight: 900 !important;
+    }
+
+    .cover-debug-close {
+      width: 36px !important;
+      height: 36px !important;
+      display: grid !important;
+      place-items: center !important;
+      flex: 0 0 auto !important;
+      color: #ffffff !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.22) !important;
+      border-radius: 999px !important;
+      font-size: 1.35rem !important;
+      line-height: 1 !important;
+      cursor: pointer !important;
+    }
+
+    .cover-debug-close:hover { background: rgba(239, 68, 68, 0.82) !important; }
+    .cover-debug-summary { color: var(--accent-2) !important; font-weight: 900 !important; }
+    .cover-debug-status { color: var(--accent) !important; font-size: 0.95rem !important; overflow-wrap: anywhere !important; }
+
+    .cover-debug-list {
+      max-height: 220px !important;
+      overflow: auto !important;
+      margin: 0 !important;
+      padding: 10px 0 0 20px !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.10) !important;
+    }
+
+    .cover-debug-list li {
+      margin-bottom: 7px !important;
+      color: var(--muted) !important;
+      font-size: 0.9rem !important;
+      overflow-wrap: anywhere !important;
+    }
+
+    .cover-debug-list li.downloaded,
+    .cover-debug-list li.success { color: var(--accent) !important; }
+    .cover-debug-list li.failed,
+    .cover-debug-list li.error { color: var(--danger) !important; }
+    .cover-debug-list li.skipped { color: var(--warning) !important; }
+
+    #actionResultBox { display: none !important; }
+
+    @media (max-width: 1050px) {
+      #topThemeStage > .control-grid,
+      #topThemeStage .panel-card.search-theme-card .filter-theme-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
 
 </head>
 <body>
   <main class="pkg-page">
 <section id="topThemeStage" class="top-theme-stage">
+  <div class="top-theme-stage-bg" aria-hidden="true"></div>
+
   <section class="hero-card">
     <div class="hero-main">
       <p class="eyebrow">PS4 PKG Sender</p>
@@ -661,136 +876,17 @@
           badge.textContent = themeLabels[themeName] || 'Pkgsender';
         }
 
-        var continuousThemeImage = new Image();
-        var continuousThemeImageUrl = '';
-        var continuousThemeImageReady = false;
-        var continuousThemeResizeTimer = null;
-
-        function getThemeCards() {
-          return document.querySelectorAll(
-            '#topThemeStage > .hero-card,' +
-            '#topThemeStage > .control-grid > .panel-card.ps4-card,' +
-            '#topThemeStage > .control-grid > .panel-card.search-card.search-theme-card,' +
-            '#topThemeStage > .control-grid > .panel-card.search-theme-card'
-          );
-        }
-
-        function clearCardThemeImages() {
-          getThemeCards().forEach(function (card) {
-            card.classList.remove('has-theme-image');
-            card.classList.remove('has-card-theme-image');
-            card.style.removeProperty('--card-theme-image');
-            card.style.removeProperty('background-image');
-            card.style.removeProperty('background-size');
-            card.style.removeProperty('background-repeat');
-            card.style.removeProperty('background-position');
-            card.style.removeProperty('backdrop-filter');
-            card.style.removeProperty('-webkit-backdrop-filter');
-            card.style.removeProperty('background-color');
-          });
-        }
-
-        function resetTopThemeStageBackground() {
+        function applyTopThemeStage(themeName) {
           var stage = document.getElementById('topThemeStage');
+          if (!stage) return;
 
-          if (stage) {
-            stage.classList.remove('has-theme-image');
-            stage.style.removeProperty('--top-theme-image');
-            stage.style.setProperty('background-image', 'none', 'important');
-            stage.style.setProperty('background', 'transparent', 'important');
-          }
-
-          document.querySelectorAll('.top-theme-stage-bg').forEach(function (el) {
-            el.remove();
-          });
-        }
-
-        function paintContinuousCardTheme(imageUrl) {
-          var stage = document.getElementById('topThemeStage');
-          var cards = getThemeCards();
-
-          resetTopThemeStageBackground();
-
-          if (!stage || !imageUrl || !continuousThemeImageReady || !continuousThemeImage.naturalWidth || !continuousThemeImage.naturalHeight) {
-            return;
-          }
-
-          var stageRect = stage.getBoundingClientRect();
-          if (!stageRect.width || !stageRect.height) return;
-
-          var imageRatio = continuousThemeImage.naturalWidth / continuousThemeImage.naturalHeight;
-          var stageRatio = stageRect.width / stageRect.height;
-          var renderedWidth;
-          var renderedHeight;
-          var originX;
-          var originY;
-
-          /* Match background-size: cover on the whole top area, but only paint it inside the cards. */
-          if (imageRatio > stageRatio) {
-            renderedHeight = stageRect.height;
-            renderedWidth = renderedHeight * imageRatio;
-            originX = (stageRect.width - renderedWidth) / 2;
-            originY = 0;
-          } else {
-            renderedWidth = stageRect.width;
-            renderedHeight = renderedWidth / imageRatio;
-            originX = 0;
-            originY = (stageRect.height - renderedHeight) / 2;
-          }
-
-          cards.forEach(function (card) {
-            var rect = card.getBoundingClientRect();
-            var cardX = rect.left - stageRect.left;
-            var cardY = rect.top - stageRect.top;
-            var positionX = originX - cardX;
-            var positionY = originY - cardY;
-
-            card.classList.remove('has-theme-image');
-            card.classList.add('has-card-theme-image');
-            card.style.setProperty('--card-theme-image', 'url("' + imageUrl + '")');
-            card.style.setProperty(
-              'background-image',
-              'linear-gradient(135deg, rgba(2, 6, 23, 0.10), rgba(15, 23, 42, 0.02)), url("' + imageUrl + '")',
-              'important'
-            );
-            card.style.setProperty('background-size', '100% 100%, ' + renderedWidth + 'px ' + renderedHeight + 'px', 'important');
-            card.style.setProperty('background-position', '0 0, ' + positionX + 'px ' + positionY + 'px', 'important');
-            card.style.setProperty('background-repeat', 'no-repeat, no-repeat', 'important');
-            card.style.setProperty('background-color', 'rgba(5, 10, 24, 0.18)', 'important');
-            card.style.setProperty('backdrop-filter', 'none', 'important');
-            card.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
-          });
-        }
-
-        function applyCardThemeImages(themeName) {
           var imageUrl = getSelectedThemeImage(themeName);
-
-          resetTopThemeStageBackground();
-
-          if (!imageUrl) {
-            continuousThemeImageUrl = '';
-            continuousThemeImageReady = false;
-            clearCardThemeImages();
-            return;
-          }
-
-          if (continuousThemeImageUrl !== imageUrl) {
-            continuousThemeImageUrl = imageUrl;
-            continuousThemeImageReady = false;
-            clearCardThemeImages();
-
-            continuousThemeImage = new Image();
-            continuousThemeImage.onload = function () {
-              continuousThemeImageReady = true;
-              paintContinuousCardTheme(imageUrl);
-            };
-            continuousThemeImage.onerror = function () {
-              continuousThemeImageReady = false;
-              clearCardThemeImages();
-            };
-            continuousThemeImage.src = imageUrl;
+          if (imageUrl) {
+            stage.style.setProperty('--top-theme-image', 'url("' + imageUrl + '")');
+            stage.classList.add('has-theme-image');
           } else {
-            paintContinuousCardTheme(imageUrl);
+            stage.style.removeProperty('--top-theme-image');
+            stage.classList.remove('has-theme-image');
           }
         }
 
@@ -803,7 +899,7 @@
 
           if (themeSelect) themeSelect.value = selectedTheme;
           setThemeBadge(selectedTheme);
-          applyCardThemeImages(selectedTheme);
+          applyTopThemeStage(selectedTheme);
         }
 
         function ensureImageModal() {
@@ -984,18 +1080,6 @@
           });
         }
 
-        function scheduleContinuousThemeRepaint() {
-          clearTimeout(continuousThemeResizeTimer);
-          continuousThemeResizeTimer = setTimeout(function () {
-            if (continuousThemeImageUrl) {
-              paintContinuousCardTheme(continuousThemeImageUrl);
-            }
-          }, 80);
-        }
-
-        window.addEventListener('resize', scheduleContinuousThemeRepaint);
-        window.addEventListener('load', scheduleContinuousThemeRepaint);
-
         if (ipForm) {
           ipForm.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -1163,5 +1247,483 @@
       });
     })();
   </script>
+
+  <script id="pkgsender-final-debug-theme-align-fix">
+    (function () {
+      'use strict';
+
+      var imageCache = {};
+      var currentThemeName = '';
+      var currentThemeImage = '';
+      var liveSource = null;
+
+      var themeImages = {
+        abstract: '/public/theme-images/abstract.jpg',
+        space: '/public/theme-images/space.jpg',
+        halloween: '/public/theme-images/halloween.jpg',
+        christmas: '/public/theme-images/christmas.jpg',
+        scifi: '/public/theme-images/scifi.jpg',
+        gta: '/public/theme-images/gta.jpg',
+        gow: '/public/theme-images/god-of-war.jpg',
+        tlou: '/public/theme-images/the-last-of-us.jpg',
+        mgs: '/public/theme-images/metal-gear-solid.jpg',
+        ps1: '/public/theme-images/playstation-1.png',
+        ps2: '/public/theme-images/playstation-2.jpg',
+        ps3: '/public/theme-images/playstation-3.jpg',
+        ps4: '/public/theme-images/playstation-4.jpg',
+        ps5: '/public/theme-images/playstation-5.jpg'
+      };
+
+      function ready(callback) {
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', callback);
+        else callback();
+      }
+
+      function getTheme() {
+        var select = document.getElementById('themeSelect');
+        return (select && select.value) || document.body.dataset.theme || localStorage.getItem('pkgsender-theme') || 'pkgsender';
+      }
+
+      function getThemeImage(themeName) {
+        var select = document.getElementById('themeSelect');
+        var option = select ? select.querySelector('option[value="' + themeName + '"]') : null;
+        return (option && option.getAttribute('data-image')) || themeImages[themeName] || '';
+      }
+
+      function getThemeCards() {
+        return Array.prototype.slice.call(document.querySelectorAll(
+          '#topThemeStage > .hero-card, ' +
+          '#topThemeStage > .control-grid > .panel-card.ps4-card, ' +
+          '#topThemeStage > .control-grid > .panel-card.search-card.search-theme-card, ' +
+          '#topThemeStage > .control-grid > .panel-card.search-theme-card'
+        ));
+      }
+
+      function clearThemeCards() {
+        var stage = document.getElementById('topThemeStage');
+        if (stage) {
+          stage.classList.remove('has-theme-image');
+          stage.style.removeProperty('--top-theme-image');
+          stage.style.backgroundImage = 'none';
+        }
+        Array.prototype.forEach.call(document.querySelectorAll('.top-theme-stage-bg'), function (el) { el.remove(); });
+        getThemeCards().forEach(function (card) {
+          card.classList.remove('card-has-theme-image', 'has-card-theme-image', 'has-theme-image');
+          card.style.removeProperty('background-image');
+          card.style.removeProperty('background-size');
+          card.style.removeProperty('background-position');
+          card.style.removeProperty('background-repeat');
+          card.style.removeProperty('background-origin');
+          card.style.removeProperty('background-clip');
+          card.style.removeProperty('background-color');
+          card.style.removeProperty('backdrop-filter');
+          card.style.removeProperty('-webkit-backdrop-filter');
+        });
+      }
+
+      function loadImageSize(url, callback) {
+        if (!url) { callback(null); return; }
+        if (imageCache[url]) {
+          if (imageCache[url].loaded) callback(imageCache[url].dims);
+          else imageCache[url].callbacks.push(callback);
+          return;
+        }
+        imageCache[url] = { loaded: false, dims: null, callbacks: [callback] };
+        var img = new Image();
+        img.onload = function () {
+          var entry = imageCache[url];
+          entry.loaded = true;
+          entry.dims = { width: img.naturalWidth || 1920, height: img.naturalHeight || 1080 };
+          entry.callbacks.splice(0).forEach(function (cb) { cb(entry.dims); });
+        };
+        img.onerror = function () {
+          var entry = imageCache[url];
+          entry.loaded = true;
+          entry.dims = { width: 1920, height: 1080 };
+          entry.callbacks.splice(0).forEach(function (cb) { cb(entry.dims); });
+        };
+        img.src = url;
+      }
+
+      function paintContinuousTheme() {
+        var stage = document.getElementById('topThemeStage');
+        var theme = getTheme();
+        var imageUrl = getThemeImage(theme);
+        currentThemeName = theme;
+        currentThemeImage = imageUrl;
+
+        if (!stage || !imageUrl) {
+          clearThemeCards();
+          return;
+        }
+
+        stage.classList.remove('has-theme-image');
+        stage.style.removeProperty('--top-theme-image');
+        stage.style.backgroundImage = 'none';
+        Array.prototype.forEach.call(document.querySelectorAll('.top-theme-stage-bg'), function (el) { el.remove(); });
+
+        loadImageSize(imageUrl, function (dims) {
+          if (currentThemeName !== theme || currentThemeImage !== imageUrl) return;
+
+          var cards = getThemeCards();
+          var stageRect = stage.getBoundingClientRect();
+          var stageWidth = Math.max(1, stageRect.width);
+          var stageHeight = Math.max(1, stageRect.height);
+          var imageRatio = dims && dims.width && dims.height ? dims.width / dims.height : 16 / 9;
+          var stageRatio = stageWidth / stageHeight;
+          var bgWidth;
+          var bgHeight;
+
+          if (stageRatio > imageRatio) {
+            bgWidth = stageWidth;
+            bgHeight = stageWidth / imageRatio;
+          } else {
+            bgHeight = stageHeight;
+            bgWidth = stageHeight * imageRatio;
+          }
+
+          var bgOffsetX = (stageWidth - bgWidth) / 2;
+          var bgOffsetY = (stageHeight - bgHeight) / 2;
+
+          cards.forEach(function (card) {
+            var rect = card.getBoundingClientRect();
+            var posX = bgOffsetX - (rect.left - stageRect.left);
+            var posY = bgOffsetY - (rect.top - stageRect.top);
+
+            card.classList.remove('card-has-theme-image', 'has-theme-image');
+            card.classList.add('has-card-theme-image');
+            card.style.setProperty('background-image', 'linear-gradient(135deg, rgba(2, 6, 23, 0.10), rgba(15, 23, 42, 0.02)), url("' + imageUrl + '")', 'important');
+            card.style.setProperty('background-size', bgWidth + 'px ' + bgHeight + 'px', 'important');
+            card.style.setProperty('background-position', posX + 'px ' + posY + 'px', 'important');
+            card.style.setProperty('background-repeat', 'no-repeat', 'important');
+            card.style.setProperty('background-origin', 'border-box', 'important');
+            card.style.setProperty('background-clip', 'border-box', 'important');
+            card.style.setProperty('background-color', 'rgba(5, 10, 24, 0.12)', 'important');
+            card.style.setProperty('backdrop-filter', 'none', 'important');
+            card.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+          });
+        });
+      }
+
+      function scheduleThemePaint() {
+        window.requestAnimationFrame(function () { paintContinuousTheme(); });
+      }
+
+      function requestJson(url, options) {
+        options = options || {};
+        options.headers = options.headers || {};
+        options.headers.Accept = 'application/json';
+        return fetch(url, options).then(function (response) {
+          return response.text().then(function (text) {
+            var data = {};
+            try { data = text ? JSON.parse(text) : {}; } catch (error) { data = { message: text }; }
+            if (!response.ok) throw new Error(data.message || data.error || 'Request failed (' + response.status + ')');
+            return data;
+          });
+        });
+      }
+
+      function showToast(message, type) {
+        var toastArea = document.getElementById('toastArea');
+        if (!toastArea || !message) return;
+        var toast = document.createElement('div');
+        toast.className = 'app-toast ' + (type || 'info');
+        toast.textContent = message;
+        toastArea.appendChild(toast);
+        setTimeout(function () {
+          toast.classList.add('hide');
+          setTimeout(function () {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+          }, 250);
+        }, 6500);
+      }
+
+      function coverToastText(data) {
+        data = data || {};
+        var downloaded = Number(data.downloaded || 0);
+        var skipped = Number(data.skipped || 0);
+        var failed = Number(data.failed || 0);
+        var message = 'Download missing covers completed with ' + downloaded + ' downloaded ' + skipped + ' skipped';
+        if (failed > 0) message += ' ' + failed + ' failed';
+        return message;
+      }
+
+      function formatCoverResultText(item) {
+        if (!item) return '';
+        var status = item.status ? String(item.status).toUpperCase() : 'INFO';
+        var type = item.type ? item.type + ' - ' : '';
+        var pkg = item.package || item.name || 'Unknown package';
+        var reason = item.shortReason || item.reason || '';
+        return status + ': ' + type + pkg + (reason ? ' - ' + reason : '');
+      }
+
+      function ensureDebugBox() {
+        var existing = document.getElementById('coverDebugStandaloneArea');
+        if (existing) return existing;
+        var downloadBtn = document.getElementById('downloadMissingCovers');
+        var libraryPanel = downloadBtn ? downloadBtn.closest('.panel-card') : null;
+        var header = libraryPanel ? libraryPanel.querySelector('.panel-title-row') : null;
+        if (!libraryPanel || !header) return null;
+
+        var area = document.createElement('div');
+        area.id = 'coverDebugStandaloneArea';
+        area.className = 'cover-debug-standalone-area';
+        area.hidden = true;
+        area.innerHTML = '<div class="cover-debug-box" id="coverDebugBox" hidden aria-live="polite">' +
+          '<div class="cover-debug-header"><div><p class="eyebrow">Live debug</p><h3>Cover download debug</h3></div>' +
+          '<button class="cover-debug-close" id="coverDebugClose" type="button" aria-label="Close live debug">&times;</button></div>' +
+          '<div id="coverDebugSummary" class="cover-debug-summary"></div>' +
+          '<div id="coverDebugStatus" class="cover-debug-status"></div>' +
+          '<ul id="coverDebugList" class="cover-debug-list"></ul></div>';
+        header.insertAdjacentElement('afterend', area);
+
+        var closeBtn = area.querySelector('#coverDebugClose');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function () {
+            var toggle = document.getElementById('liveCoverDebug');
+            if (toggle) toggle.checked = false;
+            hideDebugBox();
+          });
+        }
+        return area;
+      }
+
+      function showDebugBox(reset) {
+        var area = ensureDebugBox();
+        if (!area) return;
+        var box = document.getElementById('coverDebugBox');
+        area.hidden = false;
+        if (box) {
+          box.hidden = false;
+          box.classList.remove('success', 'error');
+        }
+        if (reset) {
+          var summary = document.getElementById('coverDebugSummary');
+          var status = document.getElementById('coverDebugStatus');
+          var list = document.getElementById('coverDebugList');
+          if (summary) summary.textContent = '';
+          if (status) status.textContent = '';
+          if (list) list.innerHTML = '';
+        }
+      }
+
+      function hideDebugBox() {
+        if (liveSource) {
+          liveSource.close();
+          liveSource = null;
+        }
+        var area = document.getElementById('coverDebugStandaloneArea');
+        var box = document.getElementById('coverDebugBox');
+        if (area) area.hidden = true;
+        if (box) box.hidden = true;
+      }
+
+      function setDebugSummary(data) {
+        var summary = document.getElementById('coverDebugSummary');
+        data = data || {};
+        if (summary) summary.textContent = 'Checked ' + (data.checked || 0) + '. Downloaded ' + (data.downloaded || 0) + '. Skipped ' + (data.skipped || 0) + '. Failed ' + (data.failed || 0) + '.';
+      }
+
+      function setDebugStatus(text) {
+        var status = document.getElementById('coverDebugStatus');
+        if (status) status.textContent = text || '';
+      }
+
+      function appendDebugLine(text, type) {
+        var list = document.getElementById('coverDebugList');
+        if (!list || !text) return;
+        var li = document.createElement('li');
+        li.className = type || '';
+        li.textContent = text;
+        list.appendChild(li);
+        list.scrollTop = list.scrollHeight;
+      }
+
+      function finishDownloadButton(button, html) {
+        if (!button) return;
+        button.disabled = false;
+        button.innerHTML = html;
+      }
+
+      function runNormalCoverDownload(button, originalHtml) {
+        hideDebugBox();
+        requestJson('/api/covers/download-missing', { method: 'POST' }).then(function (data) {
+          var type = Number(data.failed || 0) > 0 ? 'error' : 'success';
+          console.log('Cover download results:', data);
+          showToast(coverToastText(data), type);
+        }).catch(function (error) {
+          showToast(error.message || 'Download missing covers failed.', 'error');
+        }).finally(function () {
+          finishDownloadButton(button, originalHtml);
+        });
+      }
+
+      function runLiveCoverDownload(button, originalHtml) {
+        showDebugBox(true);
+        setDebugSummary({ checked: 0, downloaded: 0, skipped: 0, failed: 0 });
+        setDebugStatus('Starting live cover download...');
+
+        if (liveSource) liveSource.close();
+        var finished = false;
+        var started = false;
+        var currentChecked = 0;
+        liveSource = new EventSource('/api/covers/download-missing/stream');
+
+        liveSource.onmessage = function (event) {
+          var data = {};
+          try { data = JSON.parse(event.data || '{}'); } catch (error) { return; }
+
+          if (data.kind === 'start') {
+            started = true;
+            currentChecked = data.checked || 0;
+            setDebugSummary({ checked: currentChecked, downloaded: 0, skipped: 0, failed: 0 });
+            setDebugStatus(currentChecked > 0 ? 'Preparing ' + currentChecked + ' missing file(s)...' : 'Nothing to process.');
+            return;
+          }
+
+          if (data.kind === 'item-start') {
+            var countsStart = data.counts || {};
+            var itemStart = data.item || {};
+            setDebugSummary({ checked: currentChecked || data.total || 0, downloaded: countsStart.downloaded || 0, skipped: countsStart.skipped || 0, failed: countsStart.failed || 0 });
+            setDebugStatus('Processing ' + (data.index || 0) + '/' + (data.total || 0) + ': ' + (itemStart.type || 'item') + ' - ' + (itemStart.package || ''));
+            return;
+          }
+
+          if (data.kind === 'item-result') {
+            var countsResult = data.counts || {};
+            var itemResult = data.item || {};
+            setDebugSummary({ checked: currentChecked || data.total || 0, downloaded: countsResult.downloaded || 0, skipped: countsResult.skipped || 0, failed: countsResult.failed || 0 });
+            setDebugStatus('Processed ' + (data.index || 0) + '/' + (data.total || 0));
+            appendDebugLine(formatCoverResultText(itemResult), itemResult.status || '');
+            return;
+          }
+
+          if (data.kind === 'done') {
+            finished = true;
+            if (liveSource) liveSource.close();
+            liveSource = null;
+            var result = data.result || {};
+            var box = document.getElementById('coverDebugBox');
+            var type = Number(result.failed || 0) > 0 ? 'error' : 'success';
+            if (box) box.classList.add(type);
+            setDebugSummary(result);
+            setDebugStatus('Finished.');
+            showToast(coverToastText(result), type);
+            finishDownloadButton(button, originalHtml);
+            return;
+          }
+
+          if (data.kind === 'error') {
+            finished = true;
+            if (liveSource) liveSource.close();
+            liveSource = null;
+            var message = data.message || 'Live cover download failed';
+            var boxError = document.getElementById('coverDebugBox');
+            if (boxError) boxError.classList.add('error');
+            setDebugStatus(message);
+            appendDebugLine(message, 'failed');
+            showToast(message, 'error');
+            finishDownloadButton(button, originalHtml);
+          }
+        };
+
+        liveSource.onerror = function () {
+          if (finished) return;
+          if (liveSource) liveSource.close();
+          liveSource = null;
+          var message = started ? 'Live debug connection closed before the job finished.' : 'Could not start live debug download.';
+          setDebugStatus(message);
+          appendDebugLine(message, 'failed');
+          showToast(message, 'error');
+          finishDownloadButton(button, originalHtml);
+        };
+      }
+
+      function bindActions() {
+        var actionResultBox = document.getElementById('actionResultBox');
+        if (actionResultBox) actionResultBox.hidden = true;
+
+        var debugToggle = document.getElementById('liveCoverDebug');
+        if (debugToggle) {
+          debugToggle.addEventListener('change', function () {
+            if (debugToggle.checked) {
+              showDebugBox(false);
+              setDebugStatus('Live debug enabled. Click Download missing covers to start.');
+            } else {
+              hideDebugBox();
+            }
+          });
+        }
+
+        var downloadBtn = document.getElementById('downloadMissingCovers');
+        if (downloadBtn) {
+          downloadBtn.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+
+            var originalHtml = downloadBtn.innerHTML;
+            downloadBtn.disabled = true;
+            downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
+
+            if (debugToggle && debugToggle.checked) runLiveCoverDownload(downloadBtn, originalHtml);
+            else runNormalCoverDownload(downloadBtn, originalHtml);
+          }, true);
+        }
+
+        document.addEventListener('submit', function (event) {
+          var form = event.target && event.target.closest ? event.target.closest('.install-form') : null;
+          if (!form) return;
+
+          event.preventDefault();
+          event.stopPropagation();
+          if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+
+          var button = form.querySelector('button');
+          var originalHtml = button ? button.innerHTML : '';
+          var row = form.closest('.pkg-row');
+          var title = row && row.querySelector('.pkg-title') ? row.querySelector('.pkg-title').textContent.trim() : 'PKG';
+
+          if (button) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending';
+          }
+
+          requestJson('/install', { method: 'POST', body: new URLSearchParams(new FormData(form)) }).then(function (data) {
+            showToast((data.message || data.status || 'Install request sent to PS4') + ' - ' + title, 'success');
+          }).catch(function (error) {
+            showToast((error.message || 'Install request failed') + ' - ' + title, 'error');
+          }).finally(function () {
+            if (button) {
+              button.disabled = false;
+              button.innerHTML = originalHtml;
+            }
+          });
+        }, true);
+      }
+
+      ready(function () {
+        bindActions();
+        paintContinuousTheme();
+
+        var themeSelect = document.getElementById('themeSelect');
+        if (themeSelect) {
+          themeSelect.addEventListener('change', function () {
+            setTimeout(scheduleThemePaint, 0);
+            setTimeout(scheduleThemePaint, 80);
+            setTimeout(scheduleThemePaint, 250);
+          });
+        }
+
+        window.addEventListener('resize', scheduleThemePaint);
+        window.addEventListener('load', function () {
+          scheduleThemePaint();
+          setTimeout(scheduleThemePaint, 250);
+        });
+        setTimeout(scheduleThemePaint, 300);
+      });
+    })();
+  </script>
+
 </body>
 </html>
