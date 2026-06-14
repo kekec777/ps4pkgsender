@@ -1,18 +1,19 @@
 {
-  "name": "docker-ps4-pkg-sender",
-  "version": "0.1.0",
+  "name": "ps4-pkg-sender",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PS4 PKG Sender web UI",
   "main": "src/app.js",
-  "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.2.0",
-    "bootstrap": "^5.2.1",
-    "express": "^4.18.1",
-    "filesize": "^9.0.11",
-    "jquery": "^3.6.1",
-    "morgan": "^1.10.0",
-    "mustache": "^4.2.0",
-    "mustache-express": "^1.3.2"
-  },
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "filesize": "^10.1.6",
+    "morgan": "^1.10.0",
+    "mustache-express": "^1.3.2",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "bootstrap": "^5.3.3"
   }
 }
