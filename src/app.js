@@ -9,7 +9,7 @@ const filesizeModule = require('filesize');
 const formatFileSize = typeof filesizeModule === 'function' ? filesizeModule : filesizeModule.filesize;
 
 const port = Number(process.env.PORT || 7777);
-const staticFilesPath = path.resolve(process.env.PKG_DIR || './pkgs');
+const pkgDirPath = path.resolve(process.env.PKG_DIR || './pkgs');
 const localIp = process.env.LOCALIP || 'localhost';
 const coverImagesPath = path.join(__dirname, 'public', 'images');
 const thumbnailImagesPath = path.join(__dirname, 'public', 'thumbnail');
@@ -238,7 +238,7 @@ app.use('/css', express.static(path.join(__dirname, '../node_modules/bootstrap/d
 app.use('/js', express.static(path.join(__dirname, '../node_modules/bootstrap/dist/js')));
 app.use('/css', express.static(path.join(__dirname, 'views/css')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use('/pkgfiles', express.static(staticFilesPath, { dotfiles: 'deny', fallthrough: false }));
+app.use('/pkgfiles', express.static(pkgDirPath, { dotfiles: 'deny', fallthrough: false }));
 
 app.engine('html', mustacheExpress());
 app.set('view engine', 'html');
@@ -691,7 +691,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`PS4 PKG sender listening on port ${port} serving files from ${staticFilesPath}`);
+  console.log(`PS4 PKG sender listening on port ${port} serving files from ${pkgDirPath}`);
 });
 
 function flattenPkgs(pkgs) {
@@ -724,7 +724,7 @@ function flattenPkgs(pkgs) {
 function getPkgs() {
   const filelist = {};
 
-  if (!fs.existsSync(staticFilesPath)) {
+  if (!fs.existsSync(pkgDirPath)) {
     return filelist;
   }
 
@@ -744,7 +744,7 @@ function getPkgs() {
       }
 
       const stat = fs.statSync(filepath);
-      const relativePath = path.relative(staticFilesPath, filepath);
+      const relativePath = path.relative(pkgDirPath, filepath);
       const dirname = path.dirname(relativePath) === '.' ? 'Root' : path.dirname(relativePath);
       const root = dirname.split(path.sep)[0] || 'Root';
       const name = path.basename(filepath);
@@ -765,13 +765,13 @@ function getPkgs() {
     });
   }
 
-  walkSync(staticFilesPath);
+  walkSync(pkgDirPath);
   return filelist;
 }
 
 function resolvePkgPath(filepath) {
   const requestedPath = path.resolve(String(filepath || ''));
-  const relative = path.relative(staticFilesPath, requestedPath);
+  const relative = path.relative(pkgDirPath, requestedPath);
 
   if (!requestedPath || relative.startsWith('..') || path.isAbsolute(relative)) {
     throw new Error('Invalid package path');
@@ -785,7 +785,7 @@ function resolvePkgPath(filepath) {
 }
 
 function encodeRelativeUrl(filepath) {
-  return path.relative(staticFilesPath, filepath)
+  return path.relative(pkgDirPath, filepath)
     .split(path.sep)
     .map(encodeURIComponent)
     .join('/');
