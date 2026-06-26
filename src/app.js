@@ -9,7 +9,7 @@ const filesizeModule = require('filesize');
 const formatFileSize = typeof filesizeModule === 'function' ? filesizeModule : filesizeModule.filesize;
 
 const port = Number(process.env.PORT || 7777);
-const staticFilesPath = path.resolve(process.env.STATIC_FILES || './files');
+const staticFilesPath = path.resolve(process.env.PKG_DIR || './pkgs');
 const localIp = process.env.LOCALIP || 'localhost';
 const coverImagesPath = path.join(__dirname, 'public', 'images');
 const thumbnailImagesPath = path.join(__dirname, 'public', 'thumbnail');
